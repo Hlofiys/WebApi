@@ -1,21 +1,20 @@
-global using dotnet_rpg.Models;
-global using dotnet_rpg.Services.CharacterService;
-global using dotnet_rpg.Dtos.Character;
+global using WebApi.Models;
 global using Microsoft.EntityFrameworkCore;
-global using dotnet_rpg.Data;
-global using dotnet_rpg.Services.FightService;
+global using WebApi.Data;
+global using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Filters;
 using Microsoft.OpenApi.Models;
-using dotnet_rpg.Services.WeaponService;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+var serverVersion = new MariaDbServerVersion(new Version());
+// Add services to the container
 builder.Services.AddDbContext<DataContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseMySql( builder.Configuration.GetConnectionString("DefaultConnection"), 
+    ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+      ));
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -32,7 +31,6 @@ builder.Services.AddSwaggerGen(c =>
     c.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
-builder.Services.AddScoped<ICharacterService, CharacterService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -47,8 +45,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IWeaponService, WeaponService>();
-builder.Services.AddScoped<IFightService, FightService>();
 
 
 var app = builder.Build();

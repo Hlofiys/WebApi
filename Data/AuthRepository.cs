@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 
-namespace dotnet_rpg.Data
+namespace WebApi.Data
 {
     public class AuthRepository : IAuthRepository
     {
@@ -19,7 +19,7 @@ namespace dotnet_rpg.Data
 
         }
 
-        public async Task<ServiceResponse<string>> Login(string username, string password)
+        public async Task<ServiceResponse<string>> Login(string username, string password, HttpResponse httpResponse)
         {
             var response = new ServiceResponse<string>();
             var user = await _context.Users
@@ -36,15 +36,16 @@ namespace dotnet_rpg.Data
             }
             else
             {
+                await CreateRefreshToken(user, httpResponse);
                 response.Data = CreateToken(user);
             }
 
             return response;
         }
 
-        public async Task<ServiceResponse<int>> Register(User user, string password)
+        public async Task<ServiceResponse<string>> Register(User user, string password, HttpResponse httpResponse)
         {
-            var response = new ServiceResponse<int>();
+            var response = new ServiceResponse<string>();
             if (await UserExists(user.Username))
             {
                 response.Success = false;
@@ -59,7 +60,35 @@ namespace dotnet_rpg.Data
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            response.Data = user.Id;
+
+            await CreateRefreshToken(user, httpResponse);
+            response.Data = CreateToken(user);
+            return response;
+        }
+
+        public async Task<ServiceResponse<bool>> Delete(string username, string password)
+        {
+            var response = new ServiceResponse<bool>();
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Username.ToLower().Equals(username.ToLower()));
+            if (user is null)
+            {
+                response.Success = false;
+                response.Message = "User not found.";
+            }
+            else if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+            {
+                response.Success = false;
+                response.Message = "Wrong password.";
+            }
+            else
+            {
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+                response.Data = true;
+                return response;
+            }
+
             return response;
         }
 
@@ -110,7 +139,7 @@ namespace dotnet_rpg.Data
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddDays(1),
+                Expires = DateTime.Now.AddMinutes(30),
                 SigningCredentials = creds
             };
 
@@ -118,6 +147,149 @@ namespace dotnet_rpg.Data
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
+        }
+        private async Task<string> CreateRefreshToken(User user, HttpResponse response)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username)
+            };
+
+            var appSettingsToken = _configuration.GetSection("AppSettings:Token").Value;
+            if (appSettingsToken is null)
+                throw new Exception("AppSettings Token is null!");
+
+            SymmetricSecurityKey key = new SymmetricSecurityKey(System.Text.Encoding.UTF8
+                .GetBytes(appSettingsToken));
+
+            SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddDays(30),
+                SigningCredentials = creds
+            };
+
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+            
+            await SetRefreshToken(tokenHandler.WriteToken(token), response, user);
+
+            return tokenHandler.WriteToken(token);
+        }
+
+        private async Task SetRefreshToken(String newRefreshToken, HttpResponse response, User user)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = DateTime.Now.AddDays(30)
+            };
+            response.Cookies.Append("refreshToken", newRefreshToken, cookieOptions);
+
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpires = DateTime.Now.AddDays(30);
+
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+        }
+
+        public ServiceResponse<string> CheckToken(HttpRequest request)
+        {
+            var response = new ServiceResponse<string>();
+            var token = request.Headers["x-access-token"].ToString();
+            JwtSecurityToken? jwttoken;
+            if (token is not null){
+                jwttoken = ValidateToken(token);
+            }
+            else
+            {
+                response.Success = false;
+                return response;
+            }
+            if(jwttoken is null){
+                response.Success = false;
+                response.StatusCode = 401;
+                return response;
+            }
+            var name = jwttoken.Claims.First(x => x.Type == "unique_name").Value;
+            response.Data = name;
+            return response;
+
+        }
+
+        private JwtSecurityToken? ValidateToken(String token){
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            try{
+            tokenHandler.ValidateToken(token, GetValidationParameters(), out var decodedToken);
+            var jwttoken = (JwtSecurityToken)decodedToken;
+            
+            var tokenTicks = jwttoken.Claims.First(x => x.Type == "exp").Value;
+            var ticks= long.Parse(tokenTicks);
+            var tokenDate = DateTimeOffset.FromUnixTimeSeconds(ticks).UtcDateTime;
+
+            var now = DateTime.Now.ToUniversalTime();
+
+            var valid = tokenDate >= now;
+            if(!valid) throw new SecurityTokenExpiredException("Token expired");
+            return jwttoken;
+            }
+            catch(SecurityTokenExpiredException){
+               return null;
+            }
+            TokenValidationParameters GetValidationParameters() {
+                var appSettingsToken = _configuration.GetSection("AppSettings:Token").Value;
+            if (appSettingsToken is null)
+                throw new Exception("AppSettings Token is null!");
+            return new TokenValidationParameters()
+            {
+              ValidateLifetime = true,
+              ValidateAudience = false, 
+              ValidateIssuer = false,
+              IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(appSettingsToken))
+            };
+    }
+         }
+         public async Task<ServiceResponse<string>> Refresh(HttpRequest request, HttpResponse Httpresponse)
+        {
+            var response = new ServiceResponse<string>();
+            var token = request.Cookies["refreshToken"];
+            JwtSecurityToken? jwttoken;
+            if (token is not null){
+                jwttoken = ValidateToken(token);
+            }
+            else
+            {
+                response.Success = false;
+                return response;
+            }
+            if(jwttoken is null){
+                response.Success = false;
+                response.StatusCode = 401;
+                return response;
+            }
+            var userId = jwttoken.Claims.First(x => x.Type == "nameid").Value;
+            var userIdInt = int.Parse(userId);
+            var user = _context.Users.Find(userIdInt);
+            if(user is null){
+                response.Success = false;
+                return response;
+            }
+            if(user.RefreshToken == token){
+               await CreateRefreshToken(user, Httpresponse);
+               var AccessToken = CreateToken(user);
+               response.Data = AccessToken;
+               return response;
+            }
+            else{
+                response.Success = false;
+                response.StatusCode = 403;
+                return response;
+            }
+            
+
         }
     }
 }
