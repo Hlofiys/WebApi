@@ -14,14 +14,18 @@ namespace WebApi.Services.ItemService
         {
             var response = new ServiceResponse<Item[]>();
             Item[] items = _context.Items.ToArray();
-            Console.WriteLine(items);
             response.Data = items;
             return response;
         }
 
-        public Task<ServiceResponse<Item>> GetByiD(int id)
+        public async Task<ServiceResponse<Item>> GetById(int id)
         {
-            throw new NotImplementedException();
+            var response = new ServiceResponse<Item>();
+            Item item = _context.Items.ToList().Find(i => i.Id == id)!;
+            if (item is not null)
+                response.Data = item;
+            else response.Success = false;
+            return response;
         }
     }
 }
