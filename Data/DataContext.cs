@@ -9,9 +9,14 @@ namespace WebApi.Data
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
-
         }
 
-        public DbSet<User> Users => Set<User>();
+        public DbSet<User> Users {get; set;} = null!;
+        public DbSet<Item> Items {get; set;} = null!;
+        public DbSet<Models.Type> Types {get; set;} = null!;
+        public DbSet<Cart> Carts {get; set;} = null!;
+        public DbSet<Variant> Variants {get; set;} = null!;
+        public DbSet<CartItem> CartItems { get; set; } = null!;
+
     }
 }

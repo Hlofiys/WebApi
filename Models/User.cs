@@ -13,6 +13,7 @@ namespace WebApi.Models
         public byte[] PasswordSalt { get; set; } = new byte[0];
         public string RefreshToken {get; set;} = String.Empty;
         public DateTime RefreshTokenExpires {get; set;}
+        public Cart? Cart {get; set;} = null;
 
     }
 }
