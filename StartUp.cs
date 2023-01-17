@@ -17,9 +17,9 @@ namespace WebApi
             if (!ItemExists(index))
             {
                 List<string> images = new List<string>(){ "https://api.hlofiys.tk/media/get/podstavki?name=1_main.png", "https://api.hlofiys.tk/media/get/podstavki?name=1_second.png" };
-                string[] images1 = { "https://api.hlofiys.tk/media/get/podstavki?name=2_main.png", "https://api.hlofiys.tk/media/get/podstavki?name=2_second.png" };
-                string[] images2 = { "https://api.hlofiys.tk/media/get/podstavki?name=3_main.png", "https://api.hlofiys.tk/media/get/podstavki?name=3_second.png" };
-                string[] images3 = { "https://api.hlofiys.tk/media/get/podstavki?name=4_main.png", "https://api.hlofiys.tk/media/get/podstavki?name=4_second.png", "https://api.hlofiys.tk/media/get/podstavki?name=4_third.png" };
+                List<string> images1 = new List<string>() { "https://api.hlofiys.tk/media/get/podstavki?name=2_main.png", "https://api.hlofiys.tk/media/get/podstavki?name=2_second.png" };
+                List<string> images2 = new List<string>() { "https://api.hlofiys.tk/media/get/podstavki?name=3_main.png", "https://api.hlofiys.tk/media/get/podstavki?name=3_second.png" };
+                List<string> images3 = new List<string>() { "https://api.hlofiys.tk/media/get/podstavki?name=4_main.png", "https://api.hlofiys.tk/media/get/podstavki?name=4_second.png", "https://api.hlofiys.tk/media/get/podstavki?name=4_third.png" };
                 var item = new Item
                 {
                     Id = index,
@@ -36,7 +36,7 @@ namespace WebApi
                     Name = "Подсвечник",
                     Description = "",
                     Price = 15,
-                    Icon = "https://api.hlofiys.tk/media/get/podstavki?name=1_main.png",
+                    Icon = images1,
                     Video = "",
                     ItemId = index,
                 };
@@ -46,7 +46,7 @@ namespace WebApi
                     Name = "Шкатулка",
                     Description = "",
                     Price = 20,
-                    Icon = "https://api.hlofiys.tk/media/get/podstavki?name=1_main.png",
+                    Icon = images3,
                     Video = "",
                     ItemId = index,
                 };
@@ -56,7 +56,7 @@ namespace WebApi
                     Name = "Подсвечник + шкатулка",
                     Description = "",
                     Price = 25,
-                    Icon = "https://api.hlofiys.tk/media/get/podstavki?name=1_main.png",
+                    Icon = images2,
                     Video = "",
                     ItemId = index,
                 };
@@ -81,10 +81,6 @@ namespace WebApi
 
         public async Task AddTypes()
         {
-            List<string> images = new List<string>(){ "https://api.hlofiys.tk/media/get/podstavki?name=1_main.png", "https://api.hlofiys.tk/media/get/podstavki?name=1_second.png" };
-            string[] images1 = { "https://api.hlofiys.tk/media/get/podstavki?name=2_main.png", "https://api.hlofiys.tk/media/get/podstavki?name=2_second.png" };
-            string[] images2 = { "https://api.hlofiys.tk/media/get/podstavki?name=3_main.png", "https://api.hlofiys.tk/media/get/podstavki?name=3_second.png" };
-            string[] images3 = { "https://api.hlofiys.tk/media/get/podstavki?name=4_main.png", "https://api.hlofiys.tk/media/get/podstavki?name=4_second.png", "https://api.hlofiys.tk/media/get/podstavki?name=4_third.png" };
             int index = 1;
             if (!TypeExists(index))
             {
@@ -94,7 +90,7 @@ namespace WebApi
                     Name = "Подставка",
                     Description = "",
                     Price = 10,
-                    Icon = images
+                    Icon = "https://api.hlofiys.tk/media/get/podstavki?name=1_main.png"
                 };
                 _context.Types.Add(type);
             }
@@ -107,7 +103,7 @@ namespace WebApi
                     Name = "Шкатулка",
                     Description = "",
                     Price = 15,
-                    Icon = images
+                    Icon = ""
                 };
                 _context.Types.Add(type);
             }
@@ -120,7 +116,7 @@ namespace WebApi
                     Name = "Лилу",
                     Description = "",
                     Price = 55,
-                    Icon = images
+                    Icon = "https://api.hlofiys.tk/media/get/lilu?name=2_second.png"
                 };
                 _context.Types.Add(type);
             }
@@ -133,7 +129,7 @@ namespace WebApi
                     Name = "Берни",
                     Description = "",
                     Price = 50,
-                    Icon = images
+                    Icon = ""
                 };
                 _context.Types.Add(type);
             }

@@ -11,9 +11,9 @@ namespace WebApi.Models
         public string Username { get; set; } = string.Empty;
         public byte[] PasswordHash { get; set; } = new byte[0];
         public byte[] PasswordSalt { get; set; } = new byte[0];
-        public string RefreshToken {get; set;} = String.Empty;
+        public string RefreshToken {get; set;} = string.Empty;
         public DateTime RefreshTokenExpires {get; set;}
-        public Cart? Cart {get; set;} = null;
+        public int? CartId {get; set;} = null;
 
     }
 }

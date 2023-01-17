@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using WebApi.Dtos.Cart;
 
 namespace WebApi.Controllers
 {
@@ -6,18 +7,25 @@ namespace WebApi.Controllers
     [Route("[controller]")]
     public class CartController : ControllerBase
     {
-        private readonly IAuthRepository _authRepo;
+        private readonly ICartService _cartService;
         private readonly IMapper _mapper;
 
-        public CartController(IAuthRepository authRepo, IMapper mapper)
+        public CartController(ICartService cartService, IMapper mapper)
         {
-            _authRepo = authRepo;
+            _cartService = cartService;
             _mapper = mapper;
         }
-        [HttpGet]
-         public ActionResult<ServiceResponse<string>> checkToken()
+        [HttpPost("Add")]
+         public async Task<ActionResult<ServiceResponse<string>>> Add(CartAddDto request)
         {
-          return Ok("Sus");
+            var Id = request.Id;
+            var Amount = request.Amount;
+            var response = await _cartService.Add(Id, Amount, Request);
+            if(response.Success == false)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
         }
     }
 }

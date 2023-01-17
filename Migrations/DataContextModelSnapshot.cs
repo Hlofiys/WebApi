@@ -50,16 +50,13 @@ namespace WebApi.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("integer");
 
-                    b.Property<string>("CartId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int?>("CartId")
+                        .HasColumnType("integer");
 
                     b.Property<int?>("ItemId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ItemId");
 
                     b.ToTable("CartItems");
                 });
@@ -111,8 +108,9 @@ namespace WebApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<List<string>>("Icon")
-                        .HasColumnType("text[]");
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -158,8 +156,6 @@ namespace WebApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CartId");
-
                     b.ToTable("Users");
                 });
 
@@ -175,8 +171,8 @@ namespace WebApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Icon")
-                        .HasColumnType("text");
+                    b.Property<List<string>>("Icon")
+                        .HasColumnType("text[]");
 
                     b.Property<int?>("ItemId")
                         .HasColumnType("integer");
@@ -195,24 +191,6 @@ namespace WebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Variants");
-                });
-
-            modelBuilder.Entity("WebApi.Models.CartItem", b =>
-                {
-                    b.HasOne("WebApi.Models.Item", "Item")
-                        .WithMany()
-                        .HasForeignKey("ItemId");
-
-                    b.Navigation("Item");
-                });
-
-            modelBuilder.Entity("WebApi.Models.User", b =>
-                {
-                    b.HasOne("WebApi.Models.Cart", "Cart")
-                        .WithMany()
-                        .HasForeignKey("CartId");
-
-                    b.Navigation("Cart");
                 });
 #pragma warning restore 612, 618
         }

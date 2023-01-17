@@ -202,7 +202,7 @@ namespace WebApi.Data
             var token = request.Headers["x-access-token"].ToString();
             JwtSecurityToken? jwttoken;
             if (token is not null){
-                jwttoken = ValidateToken(token);
+                jwttoken = TokenService.ValidateToken(token, _configuration);
             }
             else
             {
@@ -220,45 +220,14 @@ namespace WebApi.Data
 
         }
 
-        private JwtSecurityToken? ValidateToken(String token){
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-            try{
-            tokenHandler.ValidateToken(token, GetValidationParameters(), out var decodedToken);
-            var jwttoken = (JwtSecurityToken)decodedToken;
-            
-            var tokenTicks = jwttoken.Claims.First(x => x.Type == "exp").Value;
-            var ticks= long.Parse(tokenTicks);
-            var tokenDate = DateTimeOffset.FromUnixTimeSeconds(ticks).UtcDateTime;
-
-            var now = DateTime.Now.ToUniversalTime();
-
-            var valid = tokenDate >= now;
-            if(!valid) throw new SecurityTokenExpiredException("Token expired");
-            return jwttoken;
-            }
-            catch(SecurityTokenExpiredException){
-               return null;
-            }
-            TokenValidationParameters GetValidationParameters() {
-                var appSettingsToken = _configuration.GetSection("AppSettings:Token").Value;
-            if (appSettingsToken is null)
-                throw new Exception("AppSettings Token is null!");
-            return new TokenValidationParameters()
-            {
-              ValidateLifetime = true,
-              ValidateAudience = false, 
-              ValidateIssuer = false,
-              IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(appSettingsToken))
-            };
-    }
-         }
+        
          public async Task<ServiceResponse<string>> Refresh(HttpRequest request, HttpResponse Httpresponse)
         {
             var response = new ServiceResponse<string>();
             var token = request.Cookies["refreshToken"];
             JwtSecurityToken? jwttoken;
             if (token is not null){
-                jwttoken = ValidateToken(token);
+                jwttoken = TokenService.ValidateToken(token, _configuration);
             }
             else
             {

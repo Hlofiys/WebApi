@@ -2,13 +2,11 @@ namespace WebApi.Services.CartService
 {
     public interface ICartService
     {
-        Task<ServiceResponse<string>> Register(User user, string password, HttpResponse response);
-        Task<ServiceResponse<string>> Login(string username, string password, HttpResponse response);
-        Task<ServiceResponse<bool>> Delete(string username, string password);
+        Task<ServiceResponse<string>> Add(string Id, string Amount, HttpRequest request);
+        Task<ServiceResponse<string>> All(HttpRequest request);
+        Task<ServiceResponse<string>> Count(HttpRequest request);
+        Task<ServiceResponse<string>> Delete(HttpRequest request);
+        Task<ServiceResponse<string>> Update(HttpRequest request);
 
-        Task<bool> UserExists(string username);
-
-        ServiceResponse<string> CheckToken(HttpRequest request);
-        Task<ServiceResponse<string>> Refresh(HttpRequest request, HttpResponse response);
     }
 }
