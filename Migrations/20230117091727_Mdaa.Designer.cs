@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebApi.Data;
@@ -12,9 +13,11 @@ using WebApi.Data;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230117091727_Mdaa")]
+    partial class Mdaa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,15 +89,16 @@ namespace WebApi.Migrations
                     b.Property<int?>("Price")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TypeId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int?>("TypeId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Video")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TypeId");
 
                     b.ToTable("Items");
                 });
@@ -204,6 +208,15 @@ namespace WebApi.Migrations
                         .HasForeignKey("ItemId");
 
                     b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("WebApi.Models.Item", b =>
+                {
+                    b.HasOne("WebApi.Models.Type", "Type")
+                        .WithMany()
+                        .HasForeignKey("TypeId");
+
+                    b.Navigation("Type");
                 });
 
             modelBuilder.Entity("WebApi.Models.User", b =>
