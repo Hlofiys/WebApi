@@ -2,7 +2,8 @@
 {
     public class CartAddDto
     {
-        public string Id { get; set; } = string.Empty;
-        public string Amount { get; set; } = string.Empty;
+        public int? Id { get; set; } = null;
+        public int? Amount { get; set; } = null;
+        public int Variant { get; set; } = 0;
     }
 }

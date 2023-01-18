@@ -20,7 +20,8 @@ namespace WebApi.Controllers
         {
             var Id = request.Id;
             var Amount = request.Amount;
-            var response = await _cartService.Add(Id, Amount, Request);
+            var Variant = request.Variant;
+            var response = await _cartService.Add((int)Id!, (int)Amount!, Variant , Request);
             if(response.Success == false)
             {
                 return NotFound(response);

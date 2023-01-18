@@ -15,7 +15,7 @@ namespace WebApi.Services.CartService
             _context = context;
 
         }
-        public async Task<ServiceResponse<string>> Add(string ReqId, string ReqAmount, HttpRequest request)
+        public async Task<ServiceResponse<string>> Add(int itemId, int itemAmount, int Variant, HttpRequest request)
         {
             var response = new ServiceResponse<string>();
             var token = request.Headers["x-access-token"].ToString();
@@ -38,19 +38,10 @@ namespace WebApi.Services.CartService
             var userIdString = jwttoken.Claims.First(x => x.Type == "nameid").Value;
             int userId = int.Parse(userIdString);
             var user = _context.Users.ToList().Find(u => u.Id == userId);
-            if(user is null){
+            if (user is null) {
                 response.Success = false;
                 return response;
             }
-            var IsSuccessItemId = int.TryParse(ReqId, out var itemId);
-            var IsSuccessItemAmount = int.TryParse(ReqAmount, out var itemAmount);
-            
-            if(!IsSuccessItemId || !IsSuccessItemAmount)
-            {
-                response.Success = false;
-                response.Message = "јйди или кол-во не могут быть строками";
-                return response;
-            } 
 
             var item = _context.Items.ToList().Find(u => u.Id == itemId);
 
@@ -83,12 +74,37 @@ namespace WebApi.Services.CartService
                     }
                 } 
             }
+            bool VariantExists;
+            Variant? FoundVariant;
+            if(Variant > 0)
+            {
+                FoundVariant = _context.Variants.ToList().Find(v => v.Id == Variant && v.ItemId == item.Id)!;
+                if (FoundVariant is null)
+                {
+                    response.Success = false;
+                    response.Message = "Ётого варианта нет";
+                    return response;
+                }
+                VariantExists = true;
+            } else
+            {
+                VariantExists = false;
+                FoundVariant = null;
+            }
             
 
             if (cartExists)
             {
-                if (cart.TotalPrice is null) cart.TotalPrice = item.Price * itemAmount;
-                else cart.TotalPrice += item.Price * itemAmount;
+                if(!VariantExists)
+                {
+                    if (cart.TotalPrice is null) cart.TotalPrice = item.Price * itemAmount;
+                    else cart.TotalPrice += item.Price * itemAmount;
+                }else
+                {
+                    if (cart.TotalPrice is null) cart.TotalPrice = FoundVariant?.Price * itemAmount;
+                    else cart.TotalPrice += FoundVariant?.Price * itemAmount;
+                }
+                
 
                 _context.Update(cart);
             }
@@ -96,8 +112,16 @@ namespace WebApi.Services.CartService
             {
                 _context.Carts.Add(cart);
                 _context.SaveChanges();
-                if (cart.TotalPrice is null) cart.TotalPrice = item.Price * itemAmount;
-                else cart.TotalPrice += item.Price * itemAmount;
+                if (!VariantExists)
+                {
+                    if (cart.TotalPrice is null) cart.TotalPrice = item.Price * itemAmount;
+                    else cart.TotalPrice += item.Price * itemAmount;
+                }
+                else
+                {
+                    if (cart.TotalPrice is null) cart.TotalPrice = FoundVariant?.Price * itemAmount;
+                    else cart.TotalPrice += FoundVariant?.Price * itemAmount;
+                }
                 _context.Update(cart);
                 user.CartId = cart.Id;
                 _context.Update(user);
@@ -108,6 +132,7 @@ namespace WebApi.Services.CartService
                 Amount = itemAmount,
                 CartId = cart.Id,
                 ItemId = item.Id,
+                Variant = Variant
             };
 
             _context.CartItems.Add(cartItem);
@@ -171,10 +196,27 @@ namespace WebApi.Services.CartService
             {
                 var FoundItem = _context.Items.ToList().Find(i => i.Id == item.ItemId);
                 if (FoundItem is null) continue;
+                Variant? FoundVariant;
+                if (item.Variant > 0)
+                {
+                    FoundVariant = _context.Variants.ToList().Find(v => v.Id == item.Variant);
+                } else FoundVariant = null;
+                if(FoundVariant is null && item.Variant > 0)
+                {
+                    response.Success = false;
+                    response.Message = "ќшибка нахождени€ варианты товара";
+                    return response;
+                }
                 ItemDto itemDto = new ItemDto()
                 {
                     Item = FoundItem,
                     Amount = item.Amount,
+                    Variant = item.Variant switch
+                    {
+                       0 => null,
+                       > 0 => FoundVariant,
+                       _ => null,
+                    }
                 };
                 itemDtos.Add(itemDto);
                 
