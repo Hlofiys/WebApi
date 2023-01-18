@@ -27,5 +27,15 @@ namespace WebApi.Controllers
             }
             return Ok(response);
         }
+        [HttpPost("All")]
+        public async Task<ActionResult<ServiceResponse<CartAllDto>>> All()
+        {
+            var response = await _cartService.All(Request);
+            if (response.Success == false)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
     }
 }
