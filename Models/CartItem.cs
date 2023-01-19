@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public int? ItemId { get; set; } = null;
-        public int Variant { get; set; } = 0;
+        public int[]? Variants { get; set; } = null;
         public int Amount { get; set; }
         public int? CartId { get; set; } = null;
 
