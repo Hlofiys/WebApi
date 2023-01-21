@@ -5,24 +5,23 @@
 namespace WebApi.Migrations
 {
     /// <inheritdoc />
-    public partial class _1 : Migration
+    public partial class _12 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-                name: "Variant",
+                name: "Kit",
                 table: "CartItems",
                 type: "integer",
-                nullable: false,
-                defaultValue: 0);
+                nullable: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Variant",
+                name: "Kit",
                 table: "CartItems");
         }
     }

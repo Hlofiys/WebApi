@@ -56,6 +56,9 @@ namespace WebApi.Migrations
                     b.Property<int?>("ItemId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("Kit")
+                        .HasColumnType("integer");
+
                     b.Property<int[]>("Variants")
                         .HasColumnType("integer[]");
 
@@ -97,6 +100,43 @@ namespace WebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Items");
+                });
+
+            modelBuilder.Entity("WebApi.Models.Kit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<List<string>>("Icon")
+                        .HasColumnType("text[]");
+
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("Price")
+                        .HasColumnType("integer");
+
+                    b.Property<List<int>>("Variants")
+                        .HasColumnType("integer[]");
+
+                    b.Property<string>("Video")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Kits");
                 });
 
             modelBuilder.Entity("WebApi.Models.Type", b =>

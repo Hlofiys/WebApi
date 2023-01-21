@@ -9,10 +9,12 @@ namespace WebApi.Services.CartService
     {
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
-        public CartService(DataContext context, IConfiguration configuration)
+        private readonly IMapper _mapper;
+        public CartService(DataContext context, IConfiguration configuration, IMapper mapper)
         {
             _configuration = configuration;
             _context = context;
+            _mapper = mapper;
 
         }
         public async Task<ServiceResponse<string>> Add(int itemId, int itemAmount, int[] Variants, HttpRequest request)
@@ -76,29 +78,48 @@ namespace WebApi.Services.CartService
             }
             bool VariantExists;
             int TotalVariantsPrice = 0;
+            Kit? Kit = null;
             List<Variant> FoundVariants = new();
             if(Variants is not null)
             {
-                foreach (var variant in Variants)
+                Kit = _context.Kits.ToList().Find(k => k.ItemId == itemId);
+                bool isArrayEqual = true;
+                if(Kit?.Variants?.ToArray().Length == Variants.Length)
                 {
-                    if (variant > 0)
+                    for (int i = 0; i < Variants.Length; i++)
                     {
-                        FoundVariants?.Add(_context.Variants.ToList().Find(v => v.Id == variant && v.ItemId == item.Id)!);
-                        if (!FoundVariants!.Any())
+                        if ((Kit?.Variants?.ToArray()[i] != Variants[i])) { isArrayEqual = false; break; }
+                    }
+                } else isArrayEqual = false;
+                if (isArrayEqual)
+                {
+                    FoundVariants?.Add(_mapper.Map<Variant>(Kit));
+                }
+                else
+                {
+                    Kit = null;
+                    foreach (var variant in Variants)
+                    {
+                        if (variant > 0)
+                        {
+                            FoundVariants?.Add(_context.Variants.ToList().Find(v => v.Id == variant && v.ItemId == item.Id)!);
+                            if (!FoundVariants!.Any())
+                            {
+                                response.Success = false;
+                                response.Message = "Этого варианта нет";
+                                return response;
+                            }
+                        }
+                        else
                         {
                             response.Success = false;
                             response.Message = "Этого варианта нет";
                             return response;
                         }
                     }
-                    else
-                    {
-                        response.Success = false;
-                        response.Message = "Этого варианта нет";
-                        return response;
-                    }
                 }
-                foreach (var variant in FoundVariants)
+                
+                foreach (var variant in FoundVariants!)
                 {
                     TotalVariantsPrice += (int)variant.Price!;
                 }
@@ -108,13 +129,6 @@ namespace WebApi.Services.CartService
             {
                 VariantExists = false;
             }
-            
-            
-           
-            
-
-
-
             if (cartExists)
             {
                 if(!VariantExists)
@@ -154,8 +168,15 @@ namespace WebApi.Services.CartService
                 Amount = itemAmount,
                 CartId = cart.Id,
                 ItemId = item.Id,
-                Variants = Variants,
             };
+            if(Kit is not null)
+            {
+                cartItem.Kit = Kit.Id;
+            }
+            else
+            {
+                cartItem.Variants = Variants;
+            }
 
             _context.CartItems.Add(cartItem);
             
@@ -207,7 +228,7 @@ namespace WebApi.Services.CartService
                 return response;
             }
             var CartItems = _context.CartItems.ToList().FindAll(c => c.CartId == cart.Id);
-            if(CartItems is null)
+            if(CartItems is null || CartItems.Count == 0)
             {
                 response.Success = false;
                 response.Message = "У пользователя нет товаров";
@@ -219,7 +240,8 @@ namespace WebApi.Services.CartService
                 var FoundItem = _context.Items.ToList().Find(i => i.Id == item.ItemId);
                 if (FoundItem is null) continue;
                 List<Variant>? FoundVariants = new ();
-                if(item.Variants is not null)
+                Kit? FoundKit = null;
+                if (item.Variants is not null)
                 {
                     foreach (var variant in item.Variants)
                     {
@@ -229,16 +251,26 @@ namespace WebApi.Services.CartService
                     {
                         FoundVariants = null;
                     }
-                    
+
                 }
                 else FoundVariants = null;
 
-
-
-                if (FoundVariants is null && item.Variants is not null)
+                if (FoundVariants is null && item.Variants is not null && item.Variants.Length > 0)
                 {
                     response.Success = false;
-                    response.Message = "Ошибка нахождения варианты товара";
+                    response.Message = "Ошибка нахождения варианта товара";
+                    return response;
+                }
+
+                if(item.Kit is not null)
+                {
+                    FoundKit = _context.Kits.ToList().Find(k => k.Id== item.Kit);
+                };
+
+                if (FoundKit is null && item.Kit is not null)
+                {
+                    response.Success = false;
+                    response.Message = "Ошибка нахождения комплекта товара";
                     return response;
                 }
                 ItemDto itemDto = new ItemDto()
@@ -249,7 +281,8 @@ namespace WebApi.Services.CartService
                     {
                        null => null,
                        _ => FoundVariants.ToArray(),
-                    }
+                    },
+                    Kit = FoundKit,
                 };
                 itemDtos.Add(itemDto);
                 
@@ -274,9 +307,159 @@ namespace WebApi.Services.CartService
             throw new NotImplementedException();
         }
 
-        public Task<ServiceResponse<string>> Delete(HttpRequest request)
+        public async Task<ServiceResponse<string>> Delete(int Id, int[] Variants, HttpRequest request)
         {
-            throw new NotImplementedException();
+            var response = new ServiceResponse<string>();
+            var token = request.Headers["x-access-token"].ToString();
+            JwtSecurityToken? jwttoken;
+            if (token is not null)
+            {
+                jwttoken = TokenService.TokenService.ValidateToken(token, _configuration);
+            }
+            else
+            {
+                response.Success = false;
+                return response;
+            }
+            if (jwttoken is null)
+            {
+                response.Success = false;
+                response.StatusCode = 401;
+                return response;
+            }
+            var userIdString = jwttoken.Claims.First(x => x.Type == "nameid").Value;
+            int userId = int.Parse(userIdString);
+            var user = _context.Users.ToList().Find(u => u.Id == userId);
+            if (user is null)
+            {
+                response.Success = false;
+                return response;
+            }
+            if (user.CartId is null)
+            {
+                response.Success = false;
+                response.Message = "У пользователя нет товаров";
+                return response;
+            }
+            var cart = _context.Carts.ToList().Find(c => c.Id == user.CartId);
+            if (cart is null)
+            {
+                response.Success = false;
+                response.Message = "У пользователя нет товаров";
+                return response;
+            }
+            var CartItem = _context.CartItems.ToList().Find(c => c.CartId == cart.Id && c.ItemId == Id);
+            if (CartItem is null)
+            {
+                response.Success = false;
+                response.Message = "У пользователя нет товара с таким id";
+                return response;
+            }
+            if(Variants is not null)
+            {
+                if(CartItem?.Variants?.Length > 0) 
+                {
+                    int OriginalVariantsLength = CartItem.Variants.Length;
+                    foreach (var variant in CartItem?.Variants!)
+                    {
+                        if(Variants.Contains(variant))
+                        {
+                            cart.TotalPrice -= (int)_context.Variants.ToList().Find(v => v.Id == variant)?.Price! * CartItem?.Amount;
+                            CartItem!.Variants = CartItem?.Variants!.Where(v => v != variant).ToArray();
+                            
+                        }
+                        if(CartItem?.Variants is null || CartItem?.Variants.Length == 0)
+                        {
+                            cart.TotalPrice += _context.Items.ToList().Find(i => i.Id == CartItem?.ItemId)?.Price * CartItem?.Amount;
+                        }
+                    }
+                    if(OriginalVariantsLength != CartItem.Variants.Length)
+                    {
+                        _context.CartItems.Update(CartItem);
+                        _context.Carts.Update(cart);
+                        _context.SaveChanges();
+                        return response;
+                    }
+                    else
+                    {
+                        response.Success = false;
+                        response.Message = "У товара нет таких вариантов";
+                        return response;
+                    }
+                }
+                else if(CartItem?.Kit is not null)
+                {
+                    List<int> NewVariants = new();
+                    var Kit = _context.Kits.ToList().Find(k => k.Id == CartItem.Kit);
+                    if(Kit is not null)
+                    {
+                        foreach (var variant in Kit?.Variants!)
+                        {
+                            if (!Variants.Contains(variant))
+                            {
+                                NewVariants.Add(variant);
+                            }
+                        }
+                        if(NewVariants.Count > 0)
+                        {
+                            int TotalPrice = 0;
+                            foreach (var variant in NewVariants)
+                            {
+                                TotalPrice += (int)_context.Variants.ToList().Find(v => v.Id == variant)?.Price! * CartItem.Amount;
+                            }
+                            cart.TotalPrice -= Kit.Price * CartItem.Amount;
+                            cart.TotalPrice += TotalPrice;
+                            CartItem.Kit = null;
+                            CartItem.Variants = NewVariants.ToArray();
+                            _context.CartItems.Update(CartItem);
+                            _context.Carts.Update(cart);
+                            _context.SaveChanges();
+                            return response;
+                        } 
+                        else if(NewVariants.Count == 0)
+                        {
+                            cart.TotalPrice -= Kit.Price * CartItem.Amount;
+                            cart.TotalPrice += _context.Items.ToList().Find(i => i.Id == CartItem.ItemId)?.Price * CartItem.Amount;
+                            CartItem.Kit = null;
+                            CartItem.Variants = null;
+                            _context.CartItems.Update(CartItem);
+                            _context.Carts.Update(cart);
+                            _context.SaveChanges();
+                            return response;
+                        }
+                        else
+                        {
+                            response.Success = false;
+                            response.Message = "Ошибка. Как ты сюда попал???";
+                            return response;
+                        }
+                    }
+                    else
+                    {
+                        response.Success = false;
+                        response.Message = "Ошибка в бд";
+                        return response;
+                    }
+                }
+                else
+                {
+                    response.Success = false;
+                    response.Message = "У товара нет таких вариантов!";
+                    return response;
+                }
+            }
+            else
+            {
+                cart.TotalPrice -= _context.Items.ToList().Find(i => i.Id == CartItem.ItemId)?.Price * CartItem.Amount;
+                _context.CartItems.Remove(CartItem);
+                _context.Carts.Update(cart);    
+                _context.SaveChanges();
+                return response;
+            }
+            /*response.Success = false;
+            response.Message = "Ошибка";
+            return response;*/
+
         }
 
         public Task<ServiceResponse<string>> Update(HttpRequest request)

@@ -10,6 +10,7 @@ namespace WebApi
         public AutoMapperProfile()
         {
             CreateMap(typeof(ServiceResponse<>), (typeof(ServiceResponseDto<>)));
+            CreateMap<Kit, Variant>();
         }
     }
 }

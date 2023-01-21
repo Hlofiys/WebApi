@@ -50,12 +50,13 @@ namespace WebApi
                     Video = "",
                     ItemId = index,
                 };
-                Variant variant3 = new Variant
+                Kit kit = new Kit
                 {
-                    Id = 3,
+                    Id = 1,
                     Name = "Подсвечник + шкатулка",
                     Description = "",
                     Price = 25,
+                    Variants =  new List<int>() { 1, 2},
                     Icon = images2,
                     Video = "",
                     ItemId = index,
@@ -64,7 +65,7 @@ namespace WebApi
                 _context.SaveChanges();
                 _context.Variants.Add(variant1);
                 _context.Variants.Add(variant2);
-                _context.Variants.Add(variant3);
+                _context.Kits.Add(kit);
                 _context.SaveChanges();
             }
             index++;

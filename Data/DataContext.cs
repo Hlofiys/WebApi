@@ -17,6 +17,6 @@ namespace WebApi.Data
         public DbSet<Cart> Carts {get; set;} = null!;
         public DbSet<Variant> Variants {get; set;} = null!;
         public DbSet<CartItem> CartItems { get; set; } = null!;
-
+        public DbSet<Kit> Kits { get; set; } = null!;
     }
 }
