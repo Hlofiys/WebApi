@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApi.Dtos.User;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Cors;
 
 namespace WebApi.Controllers
 {

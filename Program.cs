@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Filters;
 using Microsoft.OpenApi.Models;
 using WebApi;
+using Microsoft.AspNetCore.Cors;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -82,6 +83,11 @@ if (app.Environment.IsDevelopment())
 // app.UseHttpsRedirection();
 
 app.UseAuthentication();
+app.UseCors(builder =>
+               builder.WithOrigins("http://localhost:3000")
+               .AllowCredentials()
+               .AllowAnyHeader()
+               .AllowAnyMethod());
 
 app.MapGet("api/addItems",  async (DataContext db) => {
   StartUp startUp = new StartUp(db);
