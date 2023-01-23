@@ -102,7 +102,7 @@ namespace WebApi.Services.CartService
                     {
                         if (variant > 0)
                         {
-                            FoundVariants?.Add(_context.Variants.ToList().Find(v => v.Id == variant && v.ItemId == item.Id)!);
+                            FoundVariants?.Add(_context.Variants.ToList().Find(v => v.VariantId == variant && v.ItemId == item.Id)!);
                             if (!FoundVariants!.Any())
                             {
                                 response.Success = false;
@@ -171,7 +171,7 @@ namespace WebApi.Services.CartService
             };
             if(Kit is not null)
             {
-                cartItem.Kit = Kit.Id;
+                cartItem.Kit = Kit.KitId;
             }
             else
             {
@@ -245,7 +245,7 @@ namespace WebApi.Services.CartService
                 {
                     foreach (var variant in item.Variants)
                     {
-                        FoundVariants.Add(_context.Variants.ToList().Find(v => v.Id == variant)!);
+                        FoundVariants.Add(_context.Variants.ToList().Find(v => v.VariantId == variant && v.ItemId == item.ItemId)!);
                     }
                     if (!FoundVariants.Any())
                     {
@@ -264,7 +264,7 @@ namespace WebApi.Services.CartService
 
                 if(item.Kit is not null)
                 {
-                    FoundKit = _context.Kits.ToList().Find(k => k.Id== item.Kit);
+                    FoundKit = _context.Kits.ToList().Find(k => k.Id== item.Kit && k.ItemId == item.ItemId);
                 };
 
                 if (FoundKit is null && item.Kit is not null)
@@ -364,7 +364,7 @@ namespace WebApi.Services.CartService
                     {
                         if(Variants.Contains(variant))
                         {
-                            cart.TotalPrice -= (int)_context.Variants.ToList().Find(v => v.Id == variant)?.Price! * CartItem?.Amount;
+                            cart.TotalPrice -= (int)_context.Variants.ToList().Find(v => v.VariantId == variant && CartItem?.ItemId == Id)?.Price! * CartItem?.Amount;
                             CartItem!.Variants = CartItem?.Variants!.Where(v => v != variant).ToArray();
                             
                         }
@@ -390,7 +390,7 @@ namespace WebApi.Services.CartService
                 else if(CartItem?.Kit is not null)
                 {
                     List<int> NewVariants = new();
-                    var Kit = _context.Kits.ToList().Find(k => k.Id == CartItem.Kit);
+                    var Kit = _context.Kits.ToList().Find(k => k.KitId == CartItem.Kit && k.ItemId == CartItem.ItemId);
                     if(Kit is not null)
                     {
                         foreach (var variant in Kit?.Variants!)
@@ -405,7 +405,7 @@ namespace WebApi.Services.CartService
                             int TotalPrice = 0;
                             foreach (var variant in NewVariants)
                             {
-                                TotalPrice += (int)_context.Variants.ToList().Find(v => v.Id == variant)?.Price! * CartItem.Amount;
+                                TotalPrice += (int)_context.Variants.ToList().Find(v => v.VariantId == variant && v.ItemId == CartItem.ItemId)?.Price! * CartItem.Amount;
                             }
                             cart.TotalPrice -= Kit.Price * CartItem.Amount;
                             cart.TotalPrice += TotalPrice;

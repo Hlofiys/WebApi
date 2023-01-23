@@ -3,6 +3,7 @@
     public class Kit
     {
         public int Id { get; set; }
+        public int KitId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public List<int>? Variants { get; set; } = null;

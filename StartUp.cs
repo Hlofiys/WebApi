@@ -32,7 +32,7 @@ namespace WebApi
                 };
                 Variant variant1 = new Variant
                 {
-                    Id = 1,
+                    VariantId = 1,
                     Name = "Подсвечник",
                     Description = "",
                     Price = 15,
@@ -42,7 +42,7 @@ namespace WebApi
                 };
                 Variant variant2 = new Variant
                 {
-                    Id = 2,
+                    VariantId = 2,
                     Name = "Шкатулка",
                     Description = "",
                     Price = 20,
@@ -52,7 +52,7 @@ namespace WebApi
                 };
                 Kit kit = new Kit
                 {
-                    Id = 1,
+                    KitId = 1,
                     Name = "Подсвечник + шкатулка",
                     Description = "",
                     Price = 25,
