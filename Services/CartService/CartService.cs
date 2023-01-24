@@ -68,10 +68,10 @@ namespace WebApi.Services.CartService
                 } else
                 {
                     cartExists = true;
-                    if (_context.CartItems.ToList().Find(c => c.CartId == cart.Id) is not null)
+                    if (_context.CartItems.ToList().Find(c => c.CartId == cart.Id && c.ItemId == itemId) is not null)
                     {
                         response.Success = false;
-                        response.Message = "Этот товар уже есть в корзине";
+                        response.Message = "This item is already in the cart";
                         return response;
                     }
                 } 
@@ -106,14 +106,14 @@ namespace WebApi.Services.CartService
                             if (!FoundVariants!.Any())
                             {
                                 response.Success = false;
-                                response.Message = "Этого варианта нет";
+                                response.Message = "This option is not";
                                 return response;
                             }
                         }
                         else
                         {
                             response.Success = false;
-                            response.Message = "Этого варианта нет";
+                            response.Message = "This option is not";
                             return response;
                         }
                     }
@@ -217,24 +217,24 @@ namespace WebApi.Services.CartService
             if(user.CartId is null)
             {
                 response.Success = false;
-                response.Message = "У пользователя нет товаров";
+                response.Message = "The user has no products";
                 return response;
             }
             var cart = _context.Carts.ToList().Find(c => c.Id == user.CartId);
             if(cart is null)
             {
                 response.Success = false;
-                response.Message = "У пользователя нет товаров";
+                response.Message = "The user has no products";
                 return response;
             }
             var CartItems = _context.CartItems.ToList().FindAll(c => c.CartId == cart.Id);
             if(CartItems is null || CartItems.Count == 0)
             {
                 response.Success = false;
-                response.Message = "У пользователя нет товаров";
+                response.Message = "The user has no products";
                 return response;
             }
-            List<ItemDto> itemDtos = new List<ItemDto>();
+            List<CartItemDto> itemDtos = new List<CartItemDto>();
             foreach ( var item in CartItems)
             {
                 var FoundItem = _context.Items.ToList().Find(i => i.Id == item.ItemId);
@@ -258,22 +258,22 @@ namespace WebApi.Services.CartService
                 if (FoundVariants is null && item.Variants is not null && item.Variants.Length > 0)
                 {
                     response.Success = false;
-                    response.Message = "Ошибка нахождения варианта товара";
+                    response.Message = "Error finding product variant";
                     return response;
                 }
 
                 if(item.Kit is not null)
                 {
-                    FoundKit = _context.Kits.ToList().Find(k => k.Id== item.Kit && k.ItemId == item.ItemId);
+                    FoundKit = _context.Kits.ToList().Find(k => k.KitId== item.Kit && k.ItemId == item.ItemId);
                 };
 
                 if (FoundKit is null && item.Kit is not null)
                 {
                     response.Success = false;
-                    response.Message = "Ошибка нахождения комплекта товара";
+                    response.Message = "Error finding product kit";
                     return response;
                 }
-                ItemDto itemDto = new ItemDto()
+                CartItemDto itemDto = new CartItemDto()
                 {
                     Item = FoundItem,
                     Amount = item.Amount,
@@ -290,7 +290,7 @@ namespace WebApi.Services.CartService
             if (itemDtos.Count == 0)
             {
                 response.Success = false;
-                response.Message = "Ошибка поиска товаров";
+                response.Message = "Product search error";
                 return response;
             }
             CartAllDto cartAll = new CartAllDto()
@@ -338,21 +338,21 @@ namespace WebApi.Services.CartService
             if (user.CartId is null)
             {
                 response.Success = false;
-                response.Message = "У пользователя нет товаров";
+                response.Message = "The user has no products";
                 return response;
             }
             var cart = _context.Carts.ToList().Find(c => c.Id == user.CartId);
             if (cart is null)
             {
                 response.Success = false;
-                response.Message = "У пользователя нет товаров";
+                response.Message = "The user has no products";
                 return response;
             }
             var CartItem = _context.CartItems.ToList().Find(c => c.CartId == cart.Id && c.ItemId == Id);
             if (CartItem is null)
             {
                 response.Success = false;
-                response.Message = "У пользователя нет товара с таким id";
+                response.Message = "The user does not have a product with this id";
                 return response;
             }
             if(Variants is not null)
@@ -383,7 +383,7 @@ namespace WebApi.Services.CartService
                     else
                     {
                         response.Success = false;
-                        response.Message = "У товара нет таких вариантов";
+                        response.Message = "The product does not have such options";
                         return response;
                     }
                 }
@@ -430,21 +430,21 @@ namespace WebApi.Services.CartService
                         else
                         {
                             response.Success = false;
-                            response.Message = "Ошибка. Как ты сюда попал???";
+                            response.Message = "Error";
                             return response;
                         }
                     }
                     else
                     {
                         response.Success = false;
-                        response.Message = "Ошибка в бд";
+                        response.Message = "Error in DataBase";
                         return response;
                     }
                 }
                 else
                 {
                     response.Success = false;
-                    response.Message = "У товара нет таких вариантов!";
+                    response.Message = "Product doesn't have such variants";
                     return response;
                 }
             }

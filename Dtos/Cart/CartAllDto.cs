@@ -2,7 +2,7 @@
 {
     public class CartAllDto
     {
-        public List<ItemDto>? CartItems { get; set; } = null;
+        public List<CartItemDto>? CartItems { get; set; } = null;
         public int TotalPrice { get; set; } = 0;
     }
 }

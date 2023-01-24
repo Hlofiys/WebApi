@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http.HttpResults;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace WebApi
 {
@@ -66,6 +67,108 @@ namespace WebApi
                 _context.Variants.Add(variant1);
                 _context.Variants.Add(variant2);
                 _context.Kits.Add(kit);
+                _context.SaveChanges();
+            }
+            index++;
+            if (!ItemExists(index))
+            {
+                List<string> images1 = new() { "https://api.hlofiys.tk/media/get/lilu?name=1_main.png", "https://api.hlofiys.tk/media/get/lilu?name=1_second.png", "https://api.hlofiys.tk/media/get/lilu?name=1_third.png" };
+                List<string> images2 = new() { "https://api.hlofiys.tk/media/get/lilu?name=2_main.png", "https://api.hlofiys.tk/media/get/lilu?name=2_second.png", "https://api.hlofiys.tk/media/get/lilu?name=2_third.png" };
+                List<string> images3 = new() { "https://api.hlofiys.tk/media/get/lilu?name=3_main.png", "https://api.hlofiys.tk/media/get/lilu?name=3_second.png", "https://api.hlofiys.tk/media/get/lilu?name=3_third.png" };
+                List<string> images4 = new() { "https://api.hlofiys.tk/media/get/lilu?name=4_main.png", "https://api.hlofiys.tk/media/get/lilu?name=4_second.png", "https://api.hlofiys.tk/media/get/lilu?name=4_third.png" };
+                var item = new Item
+                {
+                    Id = index,
+                    Name = "Лилу",
+                    Description = "",
+                    Price = 55,
+                    Icon = images1,
+                    TypeId = types.Find(i => i.Id == 3)?.Id.ToString()!,
+                    Video = "https://api.hlofiys.tk/media/get/lilu?name=1_video.mp4",
+                };
+                Variant variant1 = new Variant
+                {
+                    VariantId = 1,
+                    Name = "Стрелки",
+                    Description = "",
+                    Price = 58,
+                    Icon = images1,
+                    Video = "",
+                    ItemId = index,
+                };
+                Variant variant2 = new Variant
+                {
+                    VariantId = 2,
+                    Name = "Шипы",
+                    Description = "",
+                    Price = 60,
+                    Icon = images3,
+                    Video = "",
+                    ItemId = index,
+                };
+                Variant variant3 = new Variant
+                {
+                    VariantId = 3,
+                    Name = "Патчи",
+                    Description = "",
+                    Price = 60,
+                    Icon = images3,
+                    Video = "",
+                    ItemId = index,
+                };
+                Kit kit1 = new Kit
+                {
+                    KitId = 1,
+                    Name = "Стрелки + Шипы",
+                    Description = "",
+                    Price = 60,
+                    Variants = new List<int>() { 1, 2 },
+                    Icon = images3,
+                    Video = "",
+                    ItemId = index,
+                };
+                Kit kit2 = new Kit
+                {
+                    KitId = 2,
+                    Name = "Патчи + Шипы",
+                    Description = "",
+                    Price = 60,
+                    Variants = new List<int>() { 2, 3 },
+                    Icon = new List<string> { "https://api.hlofiys.tk/media/get/lilu?name=4_third.png", "https://api.hlofiys.tk/media/get/lilu?name=3_main.png", "https://api.hlofiys.tk/media/get/lilu?name=4_main.png" },
+                    Video = "",
+                    ItemId = index,
+                };
+                Kit kit3 = new Kit
+                {
+                    KitId = 3,
+                    Name = "Стрелки + Патчи",
+                    Description = "",
+                    Price = 60,
+                    Variants = new List<int>() { 1, 3 },
+                    Icon = new List<string> { "https://api.hlofiys.tk/media/get/lilu?name=4_third.png", "https://api.hlofiys.tk/media/get/lilu?name=4_second.png" },
+                    Video = "",
+                    ItemId = index,
+                };
+                Kit kit4 = new Kit
+                {
+                    KitId = 4,
+                    Name = "Стрелки + Патчи + шипы",
+                    Description = "",
+                    Price = 60,
+                    Variants = new List<int>() { 1, 2, 3 },
+                    Icon = new List<string> { "https://api.hlofiys.tk/media/get/lilu?name=4_third.png", "https://api.hlofiys.tk/media/get/lilu?name=4_second.png", "https://api.hlofiys.tk/media/get/lilu?name=3_third.png" },
+                    Video = "",
+                    ItemId = index,
+                };
+                _context.Items.Add(item);
+                _context.SaveChanges();
+                _context.Variants.Add(variant1);
+                _context.Variants.Add(variant2);
+                _context.Variants.Add(variant3);
+                _context.Kits.Add(kit1);
+                _context.Kits.Add(kit2);
+                _context.Kits.Add(kit3);
+                _context.Kits.Add(kit4);
                 _context.SaveChanges();
             }
             index++;
