@@ -273,16 +273,28 @@ namespace WebApi.Services.CartService
                     response.Message = "Error finding product kit";
                     return response;
                 }
+                List<VariantDto>? variantDto= new ();
+                if(FoundVariants is not null)
+                {
+                    foreach (var var in FoundVariants)
+                    {
+                        variantDto.Add(_mapper.Map<VariantDto>(var));
+                    }
+                }
+                else
+                {
+                    variantDto = null;
+                }
                 CartItemDto itemDto = new CartItemDto()
                 {
                     Item = FoundItem,
                     Amount = item.Amount,
-                    Variants = FoundVariants switch
+                    Variants = variantDto switch
                     {
                        null => null,
-                       _ => FoundVariants.ToArray(),
+                       _ => variantDto.ToArray(),
                     },
-                    Kit = FoundKit,
+                    Kit = _mapper.Map<KitDto>(FoundKit),
                 };
                 itemDtos.Add(itemDto);
                 
