@@ -1,6 +1,6 @@
 ﻿namespace WebApi.Dtos.Cart
 {
-    public class ItemDto
+    public class CartItemDto
     {
         public Item? Item { get; set; } = null;
         public Variant[]? Variants { get; set; } = null;
