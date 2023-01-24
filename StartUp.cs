@@ -17,10 +17,10 @@ namespace WebApi
             int index = 1;
             if (!ItemExists(index))
             {
-                List<string> images = new List<string>(){ "https://api.hlofiys.tk/media/get/podstavki?name=1_main.png", "https://api.hlofiys.tk/media/get/podstavki?name=1_second.png" };
-                List<string> images1 = new List<string>() { "https://api.hlofiys.tk/media/get/podstavki?name=2_main.png", "https://api.hlofiys.tk/media/get/podstavki?name=2_second.png" };
-                List<string> images2 = new List<string>() { "https://api.hlofiys.tk/media/get/podstavki?name=3_main.png", "https://api.hlofiys.tk/media/get/podstavki?name=3_second.png" };
-                List<string> images3 = new List<string>() { "https://api.hlofiys.tk/media/get/podstavki?name=4_main.png", "https://api.hlofiys.tk/media/get/podstavki?name=4_second.png", "https://api.hlofiys.tk/media/get/podstavki?name=4_third.png" };
+                List<string> images = new List<string>(){ "http://129.159.242.47:8081/media/get/podstavki?name=1_main.png", "http://129.159.242.47:8081/media/get/podstavki?name=1_second.png" };
+                List<string> images1 = new List<string>() { "http://129.159.242.47:8081/media/get/podstavki?name=2_main.png", "http://129.159.242.47:8081/media/get/podstavki?name=2_second.png" };
+                List<string> images2 = new List<string>() { "http://129.159.242.47:8081/media/get/podstavki?name=3_main.png", "http://129.159.242.47:8081/media/get/podstavki?name=3_second.png" };
+                List<string> images3 = new List<string>() { "http://129.159.242.47:8081/media/get/podstavki?name=4_main.png", "http://129.159.242.47:8081/media/get/podstavki?name=4_second.png", "http://129.159.242.47:8081/media/get/podstavki?name=4_third.png" };
                 var item = new Item
                 {
                     Id = index,
@@ -29,7 +29,7 @@ namespace WebApi
                     Price = 10,
                     Icon = images,
                     TypeId = types.Find(i => i.Id == 1)?.Id.ToString()!,
-                    Video = "https://api.hlofiys.tk/media/get/podstavki?name=1_video.mp4",
+                    Video = "http://129.159.242.47:8081/media/get/podstavki?name=1_video.mp4",
                 };
                 Variant variant1 = new Variant
                 {
@@ -72,10 +72,10 @@ namespace WebApi
             index++;
             if (!ItemExists(index))
             {
-                List<string> images1 = new() { "https://api.hlofiys.tk/media/get/lilu?name=1_main.png", "https://api.hlofiys.tk/media/get/lilu?name=1_second.png", "https://api.hlofiys.tk/media/get/lilu?name=1_third.png" };
-                List<string> images2 = new() { "https://api.hlofiys.tk/media/get/lilu?name=2_main.png", "https://api.hlofiys.tk/media/get/lilu?name=2_second.png", "https://api.hlofiys.tk/media/get/lilu?name=2_third.png" };
-                List<string> images3 = new() { "https://api.hlofiys.tk/media/get/lilu?name=3_main.png", "https://api.hlofiys.tk/media/get/lilu?name=3_second.png", "https://api.hlofiys.tk/media/get/lilu?name=3_third.png" };
-                List<string> images4 = new() { "https://api.hlofiys.tk/media/get/lilu?name=4_main.png", "https://api.hlofiys.tk/media/get/lilu?name=4_second.png", "https://api.hlofiys.tk/media/get/lilu?name=4_third.png" };
+                List<string> images1 = new() { "http://129.159.242.47:8081/media/get/lilu?name=1_main.png", "http://129.159.242.47:8081/media/get/lilu?name=1_second.png", "http://129.159.242.47:8081/media/get/lilu?name=1_third.png" };
+                List<string> images2 = new() { "http://129.159.242.47:8081/media/get/lilu?name=2_main.png", "http://129.159.242.47:8081/media/get/lilu?name=2_second.png", "http://129.159.242.47:8081/media/get/lilu?name=2_third.png" };
+                List<string> images3 = new() { "http://129.159.242.47:8081/media/get/lilu?name=3_main.png", "http://129.159.242.47:8081/media/get/lilu?name=3_second.png", "http://129.159.242.47:8081/media/get/lilu?name=3_third.png" };
+                List<string> images4 = new() { "http://129.159.242.47:8081/media/get/lilu?name=4_main.png", "http://129.159.242.47:8081/media/get/lilu?name=4_second.png", "http://129.159.242.47:8081/media/get/lilu?name=4_third.png" };
                 var item = new Item
                 {
                     Id = index,
@@ -84,7 +84,7 @@ namespace WebApi
                     Price = 55,
                     Icon = images1,
                     TypeId = types.Find(i => i.Id == 3)?.Id.ToString()!,
-                    Video = "https://api.hlofiys.tk/media/get/lilu?name=1_video.mp4",
+                    Video = "http://129.159.242.47:8081/media/get/lilu?name=1_video.mp4",
                 };
                 Variant variant1 = new Variant
                 {
@@ -134,7 +134,7 @@ namespace WebApi
                     Description = "",
                     Price = 60,
                     Variants = new List<int>() { 2, 3 },
-                    Icon = new List<string> { "https://api.hlofiys.tk/media/get/lilu?name=4_third.png", "https://api.hlofiys.tk/media/get/lilu?name=3_main.png", "https://api.hlofiys.tk/media/get/lilu?name=4_main.png" },
+                    Icon = new List<string> { "http://129.159.242.47:8081/media/get/lilu?name=4_third.png", "http://129.159.242.47:8081/media/get/lilu?name=3_main.png", "http://129.159.242.47:8081/media/get/lilu?name=4_main.png" },
                     Video = "",
                     ItemId = index,
                 };
@@ -145,7 +145,7 @@ namespace WebApi
                     Description = "",
                     Price = 60,
                     Variants = new List<int>() { 1, 3 },
-                    Icon = new List<string> { "https://api.hlofiys.tk/media/get/lilu?name=4_third.png", "https://api.hlofiys.tk/media/get/lilu?name=4_second.png" },
+                    Icon = new List<string> { "http://129.159.242.47:8081/media/get/lilu?name=4_third.png", "http://129.159.242.47:8081/media/get/lilu?name=4_second.png" },
                     Video = "",
                     ItemId = index,
                 };
@@ -156,7 +156,7 @@ namespace WebApi
                     Description = "",
                     Price = 60,
                     Variants = new List<int>() { 1, 2, 3 },
-                    Icon = new List<string> { "https://api.hlofiys.tk/media/get/lilu?name=4_third.png", "https://api.hlofiys.tk/media/get/lilu?name=4_second.png", "https://api.hlofiys.tk/media/get/lilu?name=3_third.png" },
+                    Icon = new List<string> { "http://129.159.242.47:8081/media/get/lilu?name=4_third.png", "http://129.159.242.47:8081/media/get/lilu?name=4_second.png", "http://129.159.242.47:8081/media/get/lilu?name=3_third.png" },
                     Video = "",
                     ItemId = index,
                 };
@@ -194,7 +194,7 @@ namespace WebApi
                     Name = "Подставка",
                     Description = "",
                     Price = 10,
-                    Icon = "https://api.hlofiys.tk/media/get/podstavki?name=1_main.png"
+                    Icon = "http://129.159.242.47:8081/media/get/podstavki?name=1_main.png"
                 };
                 _context.Types.Add(type);
             }
@@ -220,7 +220,7 @@ namespace WebApi
                     Name = "Лилу",
                     Description = "",
                     Price = 55,
-                    Icon = "https://api.hlofiys.tk/media/get/lilu?name=2_second.png"
+                    Icon = "http://129.159.242.47:8081/media/get/lilu?name=2_second.png"
                 };
                 _context.Types.Add(type);
             }
