@@ -42,6 +42,10 @@ namespace WebApi.Controllers
         public async Task<ActionResult<ServiceResponse<CartAllDto>>> Delete(CartDeleteDto request)
         {
             var Id = request.Id;
+            if(Id == null)
+            {
+                return BadRequest();
+            }
             var Variants = request.Variants;
             var response = await _cartService.Delete((int)Id!, Variants!, Request);
             if (response.Success == false)
