@@ -185,6 +185,8 @@ namespace WebApi.Data
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
+                SameSite = SameSiteMode.None,
+                Secure = true,
                 Expires = DateTime.Now.AddDays(30),
             };
             response.Cookies.Append("refreshToken", newRefreshToken, cookieOptions);

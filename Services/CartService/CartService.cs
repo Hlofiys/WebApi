@@ -376,18 +376,19 @@ namespace WebApi.Services.CartService
                     {
                         if(Variants.Contains(variant))
                         {
-                            cart.TotalPrice -= (int)_context.Variants.ToList().Find(v => v.VariantId == variant && CartItem?.ItemId == Id)?.Price! * CartItem?.Amount;
+                            cart.TotalPrice -= (int)_context.Variants.ToList().Find(v => v.VariantId == variant && v?.ItemId == Id)?.Price! * CartItem?.Amount;
                             CartItem!.Variants = CartItem?.Variants!.Where(v => v != variant).ToArray();
                             
                         }
                         if(CartItem?.Variants is null || CartItem?.Variants.Length == 0)
                         {
                             cart.TotalPrice += _context.Items.ToList().Find(i => i.Id == CartItem?.ItemId)?.Price * CartItem?.Amount;
+                            break;
                         }
                     }
-                    if(OriginalVariantsLength != CartItem.Variants.Length)
+                    if(OriginalVariantsLength != CartItem?.Variants?.Length)
                     {
-                        _context.CartItems.Update(CartItem);
+                        _context.CartItems.Update(CartItem!);
                         _context.Carts.Update(cart);
                         _context.SaveChanges();
                         return response;
@@ -404,7 +405,7 @@ namespace WebApi.Services.CartService
                     List<int> NewVariants = new();
                     var Kit = _context.Kits.ToList().Find(k => k.KitId == CartItem.Kit && k.ItemId == CartItem.ItemId);
                     if(Kit is not null)
-                    {
+                        {
                         foreach (var variant in Kit?.Variants!)
                         {
                             if (!Variants.Contains(variant))
