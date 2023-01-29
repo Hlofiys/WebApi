@@ -39,7 +39,7 @@ namespace WebApi.Controllers
             return Ok(response);
         }
         [HttpPost("Delete")]
-        public async Task<ActionResult<ServiceResponse<CartAllDto>>> Delete(CartDeleteDto request)
+        public async Task<ActionResult<ServiceResponse<string>>> Delete(CartDeleteDto request)
         {
             var Id = request.Id;
             if(Id == null)
@@ -48,6 +48,23 @@ namespace WebApi.Controllers
             }
             var Variants = request.Variants;
             var response = await _cartService.Delete((int)Id!, Variants!, Request);
+            if (response.Success == false)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+        [HttpPost("Update")]
+        public async Task<ActionResult<ServiceResponse<string>>> Update(CartUpdateDto request)
+        {
+            var Id = request.Id;
+            if (Id == null)
+            {
+                return BadRequest();
+            }
+            var Variants = request.Variants;
+            var Amount = request.Amount;
+            var response = await _cartService.Update((int)Id!, Variants, Amount, Request);
             if (response.Success == false)
             {
                 return NotFound(response);
