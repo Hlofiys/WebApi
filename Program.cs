@@ -11,6 +11,7 @@ using Swashbuckle.AspNetCore.Filters;
 using Microsoft.OpenApi.Models;
 using WebApi;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -68,6 +69,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false
         };
     });
+builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
+     policy.AllowCredentials().WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod()));
+builder.Services.AddMvc();
 builder.Services.AddHttpContextAccessor();
 
 
@@ -83,11 +87,7 @@ if (app.Environment.IsDevelopment())
 // app.UseHttpsRedirection();
 
 app.UseAuthentication();
-app.UseCors(builder =>
-               builder.WithOrigins("http://localhost:3000")
-               .AllowCredentials()
-               .AllowAnyHeader()
-               .AllowAnyMethod());
+
 
 app.MapGet("api/addItems",  async (DataContext db) => {
   StartUp startUp = new StartUp(db);
@@ -97,5 +97,7 @@ app.MapGet("api/addItems",  async (DataContext db) => {
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors();
 
 app.Run();
