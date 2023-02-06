@@ -180,7 +180,7 @@ namespace WebApi.Data
             return tokenHandler.WriteToken(token);
         }
 
-        private async Task SetRefreshToken(String newRefreshToken, HttpResponse response, User user)
+        private async Task SetRefreshToken(string newRefreshToken, HttpResponse response, User user)
         {
             var cookieOptions = new CookieOptions
             {

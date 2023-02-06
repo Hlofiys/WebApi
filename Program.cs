@@ -84,7 +84,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseCors(builder =>
-               builder.WithOrigins("http://localhost:3000")
+               builder.AllowAnyOrigin()
                .AllowCredentials()
                .AllowAnyHeader()
                .AllowAnyMethod());
