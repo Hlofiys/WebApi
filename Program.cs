@@ -69,9 +69,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false
         };
     });
-builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
+builder.Services.AddCors(options => options.AddPolicy("corssus", policy =>
      policy.AllowCredentials().WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod()));
-builder.Services.AddMvc();
 builder.Services.AddHttpContextAccessor();
 
 
@@ -84,9 +83,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection();
 
-app.UseAuthentication();
 
 
 app.MapGet("api/addItems",  async (DataContext db) => {
@@ -94,10 +91,11 @@ app.MapGet("api/addItems",  async (DataContext db) => {
   await startUp.AddTypes().ContinueWith(async i => await startUp.AddItems());
 });
 
+app.UseCors("corssus");
+app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.UseCors();
 
 app.Run();
