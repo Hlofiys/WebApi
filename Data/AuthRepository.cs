@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
@@ -190,6 +191,10 @@ namespace WebApi.Data
                 Expires = DateTime.Now.AddDays(30),
             };
             response.Cookies.Append("refreshToken", newRefreshToken, cookieOptions);
+            response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, x-access-token");
+            response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:3000");
+            response.Headers.Append("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+            response.Headers.Append("Access-Control-Allow-Credentials", "true");
 
             user.RefreshToken = newRefreshToken;
             user.RefreshTokenExpires = DateTime.Now.AddDays(30);

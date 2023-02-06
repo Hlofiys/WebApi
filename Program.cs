@@ -91,8 +91,7 @@ app.MapGet("api/addItems",  async (DataContext db) => {
   await startUp.AddTypes().ContinueWith(async i => await startUp.AddItems());
 });
 
-app.UseCors("corssus");
-app.UseHttpsRedirection();
+app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowCredentials().AllowAnyHeader().AllowAnyMethod());
 app.UseAuthentication();
 app.UseAuthorization();
 

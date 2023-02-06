@@ -21,6 +21,7 @@ namespace WebApi.Controllers
             _mapper = mapper;
         }
 
+        [EnableCors("corssus")]
         [HttpPost("Register")]
         public async Task<ActionResult<ServiceResponse<string>>> Register(UserRegisterDto request)
         {
@@ -34,7 +35,7 @@ namespace WebApi.Controllers
             }
             return Ok(MapperResponse);
         }
-
+        [EnableCors("corssus")]
         [HttpPost("Login")]
         public async Task<ActionResult<ServiceResponse<string>>> Login(UserLoginDto request)
         {
@@ -71,6 +72,7 @@ namespace WebApi.Controllers
             }
             return Ok(MapperResponse);
         }
+        [EnableCors("corssus")]
         [HttpGet("Refresh")]
         public async Task<ActionResult<ServiceResponse<string>>> Refresh()
         {
