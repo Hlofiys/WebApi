@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
+using System.Reflection;
 
 namespace WebApi.Controllers
 {
@@ -18,7 +19,7 @@ namespace WebApi.Controllers
         {
             string FileName = Request.Query["name"]!;
             string FilePath = $"images/{CategoryName}/{FileName}";
-            FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FilePath);
+            FilePath = Path.Combine(Assembly.GetEntryAssembly()!.Location, FilePath);
             if (System.IO.File.Exists(FilePath))
                 return PhysicalFile(FilePath, "image/png");
             else
