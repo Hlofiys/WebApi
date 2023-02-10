@@ -71,5 +71,20 @@ namespace WebApi.Controllers
             }
             return Ok(response);
         }
+        [HttpPost("Count")]
+        public async Task<ActionResult<ServiceResponse<int>>> Count()
+        {
+            var req = Request;
+            if (req == null)
+            {
+                return BadRequest();
+            }
+            var response = await _cartService.Count(req);
+            if (response.Success == false)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
     }
 }

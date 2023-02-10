@@ -355,9 +355,53 @@ namespace WebApi.Services.CartService
             return response;
         }
 
-        public Task<ServiceResponse<string>> Count(HttpRequest request)
+        public async Task<ServiceResponse<int>> Count(HttpRequest request)
         {
-            throw new NotImplementedException();
+            var response = new ServiceResponse<int>();
+            var token = request.Headers["x-access-token"].ToString();
+            JwtSecurityToken? jwttoken;
+            if (token is not null)
+            {
+                jwttoken = TokenService.TokenService.ValidateToken(token, _configuration);
+            }
+            else
+            {
+                response.Success = false;
+                return response;
+            }
+            if (jwttoken is null)
+            {
+                response.Success = false;
+                response.StatusCode = 401;
+                return response;
+            }
+            var userIdString = jwttoken.Claims.First(x => x.Type == "nameid").Value;
+            int userId = int.Parse(userIdString);
+            var user = _context.Users.ToList().Find(u => u.Id == userId);
+            if (user is null)
+            {
+                response.Success = false;
+                return response;
+            }
+            if (user.CartId is null)
+            {
+                response.Data = 0;
+                return response;
+            }
+            var cart = _context.Carts.ToList().Find(c => c.Id == user.CartId);
+            if (cart is null)
+            {
+                response.Data = 0;
+                return response;
+            }
+            var CartItems = _context.CartItems.ToList().FindAll(c => c.CartId == cart.Id);
+            if (CartItems is null)
+            {
+                response.Data = 0;
+                return response;
+            }
+            response.Data = CartItems.Count;
+            return response;
         }
 
         public async Task<ServiceResponse<string>> Delete(int Id, int[] Variants, HttpRequest request)
