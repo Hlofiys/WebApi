@@ -611,9 +611,9 @@ namespace WebApi.Services.CartService
 
         }
 
-        public async Task<ServiceResponse<string>> Update(int Id, int[]? Variants, int? Amount, HttpRequest request)
+        public async Task<ServiceResponse<CartAllDto>> Update(int Id, int[]? Variants, int? Amount, HttpRequest request)
         {
-            var response = new ServiceResponse<string>();
+            var response = new ServiceResponse<CartAllDto>();
             var token = request.Headers["x-access-token"].ToString();
             JwtSecurityToken? jwttoken;
             if (token is not null)
@@ -839,6 +839,10 @@ namespace WebApi.Services.CartService
                 _context.CartItems.Update(CartItem);
                 _context.SaveChanges();
 
+                var all = await All(request);
+
+                response.Data = all.Data;
+
                 return response;
 
 
@@ -853,7 +857,11 @@ namespace WebApi.Services.CartService
              cart.TotalPrice += CartItem?.Price;
              _context.Carts.Update(cart);
              _context.CartItems.Update(CartItem!);
-            _context.SaveChanges();
+             _context.SaveChanges();
+             var all = await All(request);
+
+             response.Data = all.Data;
+
              return response;
         }
         else

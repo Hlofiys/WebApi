@@ -55,7 +55,7 @@ namespace WebApi.Controllers
             return Ok(response);
         }
         [HttpPost("Update")]
-        public async Task<ActionResult<ServiceResponse<string>>> Update(CartUpdateDto request)
+        public async Task<ActionResult<ServiceResponse<CartAllDto>>> Update(CartUpdateDto request)
         {
             var Id = request.Id;
             if (Id == null)

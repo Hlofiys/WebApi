@@ -8,7 +8,7 @@ namespace WebApi.Services.CartService
         Task<ServiceResponse<CartAllDto>> All(HttpRequest request);
         Task<ServiceResponse<int>> Count(HttpRequest request);
         Task<ServiceResponse<string>> Delete(int Id, int[] Variants, HttpRequest request);
-        Task<ServiceResponse<string>> Update(int Id, int[]? Variants, int? Amount, HttpRequest request);
+        Task<ServiceResponse<CartAllDto>> Update(int Id, int[]? Variants, int? Amount, HttpRequest request);
 
     }
 }
