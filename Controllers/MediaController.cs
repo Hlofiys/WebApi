@@ -18,8 +18,8 @@ namespace WebApi.Controllers
         public ActionResult GetFile(string CategoryName)
         {
             string FileName = Request.Query["name"]!;
-            string FilePath = $"images/{CategoryName}/{FileName}";
-            FilePath = Path.Combine(Assembly.GetEntryAssembly()!.Location, FilePath);
+            string FilePath = $"/images/{CategoryName}/{FileName}";
+            FilePath = Path.Combine(Directory.GetCurrentDirectory(), FilePath);
             if (System.IO.File.Exists(FilePath))
                 return PhysicalFile(FilePath, "image/png");
             else
