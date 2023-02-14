@@ -172,6 +172,31 @@ namespace WebApi
                 _context.SaveChanges();
             }
             index++;
+            if (!ItemExists(index))
+            {
+                var item = new Item
+                {
+                    Id = index,
+                    Name = "Берни",
+                    Description = "",
+                    Price = 45,
+                    TypeId = types.Find(i => i.Id == 4)?.Id.ToString()!,
+                };
+                Variant variant1 = new Variant
+                {
+                    VariantId = 1,
+                    Name = "Шмпы",
+                    Description = "",
+                    Price = 50,
+                    Video = "",
+                    ItemId = index,
+                };
+                _context.Items.Add(item);
+                _context.SaveChanges();
+                _context.Variants.Add(variant1);
+                _context.SaveChanges();
+            }
+            index++;
         }
         private bool ItemExists(int id)
         {
@@ -232,7 +257,7 @@ namespace WebApi
                     Id = index,
                     Name = "Берни",
                     Description = "",
-                    Price = 50,
+                    Price = 45,
                     Icon = ""
                 };
                 _context.Types.Add(type);
