@@ -63,7 +63,7 @@ namespace WebApi.Data
             Guid myuuid = Guid.NewGuid();
             string myuuidAsString = myuuid.ToString();
             user.ActivationId = myuuidAsString;
-            await emailService.SendEmailAsync(user.Username, "Confirmation link", $"https://localhost:7060/Auth/Activate/{myuuidAsString}");
+            await emailService.SendEmailAsync(user.Username, "Confirmation link", $"https://api.native-flora.tk/Auth/Activate/{myuuidAsString}");
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
