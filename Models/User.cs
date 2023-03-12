@@ -14,6 +14,8 @@ namespace WebApi.Models
         public string RefreshToken {get; set;} = string.Empty;
         public DateTime RefreshTokenExpires {get; set;}
         public int? CartId {get; set;} = null;
+        public string ActivationId { get; set;} = string.Empty;
+        public bool IsActivated { get; set;} = false;
 
     }
 }

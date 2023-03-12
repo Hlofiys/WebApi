@@ -6,6 +6,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
+using WebApi.Services.EmailService;
 
 namespace WebApi.Data
 {
@@ -47,6 +48,7 @@ namespace WebApi.Data
         public async Task<ServiceResponse<string>> Register(User user, string password, HttpResponse httpResponse)
         {
             var response = new ServiceResponse<string>();
+            EmailService emailService = new EmailService(_configuration);
             if (await UserExists(user.Username))
             {
                 response.Success = false;
@@ -58,13 +60,17 @@ namespace WebApi.Data
 
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
-
+            Guid myuuid = Guid.NewGuid();
+            string myuuidAsString = myuuid.ToString();
+            user.ActivationId = myuuidAsString;
+            await emailService.SendEmailAsync(user.Username, "Confirmation link", $"https://localhost:7060/Auth/Activate/{myuuidAsString}");
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
             await CreateRefreshToken(user, httpResponse);
             response.Data = CreateToken(user);
             return response;
+            
         }
 
         public async Task<ServiceResponse<bool>> Delete(string username, string password)
@@ -266,6 +272,30 @@ namespace WebApi.Data
             }
             
 
+        }
+
+        public async Task<ServiceResponse<string>> Activate(string id)
+        {
+            var response = new ServiceResponse<string>();
+            var user = _context.Users.ToList().Find(user => user.ActivationId == id);
+            if(user is null)
+            {
+                response.Success = false;
+                response.Message = "User does not exists";
+                response.StatusCode = 2;
+                return response;
+            }
+            if(user.IsActivated == true)
+            {
+                response.Success = false;
+                response.Message = "User alredy activated";
+                response.StatusCode = 1;
+                return response;
+            }
+            user.IsActivated = true;
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+            return response;
         }
     }
 }

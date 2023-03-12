@@ -12,6 +12,9 @@ using Microsoft.OpenApi.Models;
 using WebApi;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using WebApi.Services;
+using WebApi.Services.EmailService;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

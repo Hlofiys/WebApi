@@ -86,5 +86,24 @@ namespace WebApi.Controllers
             }
             return Ok(MapperResponse);
         }
+        [HttpGet("Activate/{id}")]
+        public async Task<ActionResult<ServiceResponse<string>>> Activate(string id)
+        {
+            if(id == null)
+            {
+                return BadRequest();
+            }
+            var response = await _authRepo.Activate(id);
+            var MapperResponse = _mapper.Map<ServiceResponseDto<string>>(response);
+            if (!response.Success && response.StatusCode == 1)
+            {
+                return BadRequest(MapperResponse);
+            }
+            if(!response.Success && response.StatusCode == 2)
+            {
+                return NotFound(MapperResponse);
+            }
+            return Ok(MapperResponse);
+        }
     }
 }

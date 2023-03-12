@@ -15,5 +15,6 @@ namespace WebApi.Data
 
         ServiceResponse<string> CheckToken(HttpRequest request);
         Task<ServiceResponse<string>> Refresh(HttpRequest request, HttpResponse response);
+        Task<ServiceResponse<string>> Activate(string id);
     }
 }
