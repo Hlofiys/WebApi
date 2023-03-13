@@ -93,7 +93,7 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
-            var response = await _authRepo.Activate(id);
+            var response = await _authRepo.Activate(id, Response);
             var MapperResponse = _mapper.Map<ServiceResponseDto<string>>(response);
             if (!response.Success && response.StatusCode == 1)
             {
@@ -102,6 +102,17 @@ namespace WebApi.Controllers
             if(!response.Success && response.StatusCode == 2)
             {
                 return NotFound(MapperResponse);
+            }
+            return Ok(MapperResponse);
+        }
+        [HttpGet("DeleteAll")]
+        public async Task<ActionResult<ServiceResponse<string>>> DeleteAll()
+        {
+            var response = await _authRepo.DeleteAll();
+            var MapperResponse = _mapper.Map<ServiceResponseDto<string>>(response);
+            if (!response.Success)
+            {
+                return BadRequest(MapperResponse);
             }
             return Ok(MapperResponse);
         }

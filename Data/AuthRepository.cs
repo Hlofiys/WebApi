@@ -66,9 +66,6 @@ namespace WebApi.Data
             await emailService.SendEmailAsync(user.Username, "Confirmation link", $"https://api.native-flora.tk/Auth/Activate/{myuuidAsString}");
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-
-            await CreateRefreshToken(user, httpResponse);
-            response.Data = CreateToken(user);
             return response;
             
         }
@@ -274,7 +271,7 @@ namespace WebApi.Data
 
         }
 
-        public async Task<ServiceResponse<string>> Activate(string id)
+        public async Task<ServiceResponse<string>> Activate(string id, HttpResponse httpResponse)
         {
             var response = new ServiceResponse<string>();
             var user = _context.Users.ToList().Find(user => user.ActivationId == id);
@@ -294,6 +291,27 @@ namespace WebApi.Data
             }
             user.IsActivated = true;
             _context.Update(user);
+            await _context.SaveChangesAsync();
+            await CreateRefreshToken(user, httpResponse);
+            response.Data = CreateToken(user);
+            return response;
+        }
+
+        public async Task<ServiceResponse<string>> DeleteAll()
+        {
+            var response = new ServiceResponse<string>();
+            foreach (var user in _context.Users)
+            {
+                _context.Users.Remove(user);
+            }
+            foreach (var cart in _context.Carts)
+            {
+                _context.Carts.Remove(cart);
+            }
+            foreach (var cartItem in _context.CartItems)
+            {
+                _context.CartItems.Remove(cartItem);
+            }
             await _context.SaveChangesAsync();
             return response;
         }
