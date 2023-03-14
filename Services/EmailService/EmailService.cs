@@ -12,7 +12,7 @@ namespace WebApi.Services.EmailService
             _configuration = configuration;
         }
 
-        public async Task SendEmailAsync(string toEmail, string subject, string message)
+        public async Task<string> SendEmailAsync(string toEmail, string subject, string message)
         {
             var email = new MimeMessage();
             email.From.Add(MailboxAddress.Parse(_configuration.GetSection("EmailConfig:Email").Value));
@@ -24,10 +24,19 @@ namespace WebApi.Services.EmailService
             };
 
             using var smpt = new SmtpClient();
-            smpt.Connect("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-            smpt.Authenticate(_configuration.GetSection("EmailConfig:Email").Value, _configuration.GetSection("EmailConfig:Password").Value);
-            smpt.Send(email);
+            
+            try
+            {
+                smpt.Connect("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+                smpt.Authenticate(_configuration.GetSection("EmailConfig:Email").Value, _configuration.GetSection("EmailConfig:Password").Value);
+                smpt.Send(email);
+            }
+            catch(Exception ex)
+            {
+                return ex.Message;
+            }
             smpt.Disconnect(true);
+            return "Message sent";
         }
     }
 }
