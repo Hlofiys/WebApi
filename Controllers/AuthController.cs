@@ -39,7 +39,7 @@ namespace WebApi.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult<ServiceResponse<string>>> Login(UserLoginDto request)
         {
-            var response = await _authRepo.Login(request.Username, request.Password, Response);
+            var response = await _authRepo.Login(request.Username, request.Password, Response, Request);
             var MapperResponse = _mapper.Map<ServiceResponseDto<string>>(response);
             if(!response.Success)
             {
@@ -94,7 +94,7 @@ namespace WebApi.Controllers
             {
                 return BadRequest();
             }
-            var response = await _authRepo.Activate(id, Response);
+            var response = await _authRepo.Activate(id, Response, Request);
             var MapperResponse = _mapper.Map<ServiceResponseDto<string>>(response);
             if (!response.Success && response.StatusCode == 1)
             {

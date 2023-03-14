@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using WebApi.Services.EmailService;
 
@@ -21,7 +22,7 @@ namespace WebApi.Data
 
         }
 
-        public async Task<ServiceResponse<string>> Login(string username, string password, HttpResponse httpResponse)
+        public async Task<ServiceResponse<string>> Login(string username, string password, HttpResponse httpResponse, HttpRequest httpRequest)
         {
             var response = new ServiceResponse<string>();
             var user = await _context.Users
@@ -38,7 +39,7 @@ namespace WebApi.Data
             }
             else
             {
-                await CreateRefreshToken(user, httpResponse);
+                await CreateRefreshToken(user, httpResponse, httpRequest);
                 response.Data = CreateToken(user);
             }
 
@@ -153,7 +154,7 @@ namespace WebApi.Data
 
             return tokenHandler.WriteToken(token);
         }
-        private async Task<string> CreateRefreshToken(User user, HttpResponse response)
+        private async Task<string> CreateRefreshToken(User user, HttpResponse response, HttpRequest httpRequest)
         {
             var claims = new List<Claim>
             {
@@ -180,12 +181,12 @@ namespace WebApi.Data
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
             
-            await SetRefreshToken(tokenHandler.WriteToken(token), response, user);
+            await SetRefreshToken(tokenHandler.WriteToken(token), response, user, httpRequest);
 
             return tokenHandler.WriteToken(token);
         }
 
-        private async Task SetRefreshToken(string newRefreshToken, HttpResponse response, User user)
+        private async Task SetRefreshToken(string newRefreshToken, HttpResponse response, User user, HttpRequest httpRequest)
         {
             var cookieOptions = new CookieOptions
             {
@@ -193,6 +194,8 @@ namespace WebApi.Data
                 SameSite = SameSiteMode.None,
                 Secure = true,
                 Expires = DateTime.Now.AddDays(30),
+                Path = "/",
+                Domain = httpRequest.Host.Value,
             };
             response.Cookies.Append("refreshToken", newRefreshToken, cookieOptions);
             response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, x-access-token");
@@ -258,7 +261,7 @@ namespace WebApi.Data
                 return response;
             }
             if(user.RefreshToken == token){
-               await CreateRefreshToken(user, Httpresponse);
+               await CreateRefreshToken(user, Httpresponse, request);
                var AccessToken = CreateToken(user);
                response.Data = AccessToken;
                return response;
@@ -272,7 +275,7 @@ namespace WebApi.Data
 
         }
 
-        public async Task<ServiceResponse<string>> Activate(string id, HttpResponse httpResponse)
+        public async Task<ServiceResponse<string>> Activate(string id, HttpResponse httpResponse, HttpRequest httpRequest)
         {
             var response = new ServiceResponse<string>();
             var user = _context.Users.ToList().Find(user => user.ActivationId == id);
@@ -293,7 +296,7 @@ namespace WebApi.Data
             user.IsActivated = true;
             _context.Update(user);
             await _context.SaveChangesAsync();
-            await CreateRefreshToken(user, httpResponse);
+            await CreateRefreshToken(user, httpResponse, httpRequest);
             response.Data = CreateToken(user);
             return response;
         }
