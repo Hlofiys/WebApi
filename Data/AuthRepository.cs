@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -64,7 +64,7 @@ namespace WebApi.Data
             string myuuidAsString = myuuid.ToString();
             user.ActivationId = myuuidAsString;
             response.Data = 
-                await emailService.SendEmailAsync(user.Username, "Подтверждение акаунта", $"Для подтверждения вашего аккаунта Lepota.by <a href=\"https://kirikkostya.github.io/Lepota/#/Activation/?id={myuuidAsString}\">нажмите сюда</a>");
+                await emailService.SendEmailAsync(user.Username, "РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ Р°РєР°СѓРЅС‚Р°", $"Р”Р»СЏ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёСЏ РІР°С€РµРіРѕ Р°РєРєР°СѓРЅС‚Р° Lepota.by <a href=\"https://kirikkostya.github.io/Lepota/#/Activation/?id={myuuidAsString}\">РЅР°Р¶РјРёС‚Рµ СЃСЋРґР°</a>");
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             return response;
