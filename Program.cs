@@ -73,7 +73,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 builder.Services.AddCors(options => options.AddPolicy("corssus", policy =>
-     policy.AllowCredentials().WithOrigins("http://localhost:3000", "https://kirikkostya.github.io/").AllowAnyHeader().AllowAnyMethod()));
+     policy.AllowCredentials().WithOrigins("http://localhost:3000", "https://kirikkostya.github.io").AllowAnyHeader().AllowAnyMethod()));
 builder.Services.AddHttpContextAccessor();
 
 
@@ -94,7 +94,7 @@ app.MapGet("api/addItems",  async (DataContext db) => {
   await startUp.AddTypes().ContinueWith(async i => await startUp.AddItems());
 });
 
-app.UseCors(options => options.WithOrigins("http://localhost:3000", "https://kirikkostya.github.io/").AllowCredentials().AllowAnyHeader().AllowAnyMethod());
+app.UseCors(options => options.WithOrigins("http://localhost:3000", "https://kirikkostya.github.io").AllowCredentials().AllowAnyHeader().AllowAnyMethod());
 app.UseAuthentication();
 app.UseAuthorization();
 

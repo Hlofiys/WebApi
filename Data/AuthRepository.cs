@@ -196,7 +196,7 @@ namespace WebApi.Data
             };
             response.Cookies.Append("refreshToken", newRefreshToken, cookieOptions);
             response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, x-access-token");
-            response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:3000");
+            response.Headers.Append("Access-Control-Allow-Origin", "https://kirikkostya.github.io");
             response.Headers.Append("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
             response.Headers.Append("Access-Control-Allow-Credentials", "true");
 
