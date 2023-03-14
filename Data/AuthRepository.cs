@@ -64,7 +64,7 @@ namespace WebApi.Data
             string myuuidAsString = myuuid.ToString();
             user.ActivationId = myuuidAsString;
             response.Data = 
-                await emailService.SendEmailAsync(user.Username, "Email confirmation", $"<a href=\"https://kirikkostya.github.io/Lepota/#/Activation/?id={myuuidAsString}\">Click here</a>");
+                await emailService.SendEmailAsync(user.Username, "Подтверждение акаунта", $"Для подтверждения вашего аккаунта Lepota.by <a href=\"https://kirikkostya.github.io/Lepota/#/Activation/?id={myuuidAsString}\">нажмите сюда</a>");
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             return response;
