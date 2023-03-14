@@ -87,7 +87,7 @@ namespace WebApi.Controllers
             return Ok(MapperResponse);
         }
         [EnableCors("corssus")]
-        [HttpGet("Activate/{id}")]
+        [HttpPost("Activate/{id}")]
         public async Task<ActionResult<ServiceResponse<string>>> Activate(string id)
         {
             if(id == null)
