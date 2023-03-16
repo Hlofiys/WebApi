@@ -4,6 +4,7 @@ namespace WebApi.Dtos.Order
 {
     public class OrderAllDto
     {
+        public int Id { get; set; }
         public bool? Shipping { get; set; } = null;
         public string Address { get; set; } = string.Empty;
         public string FIO { get; set; } = string.Empty;

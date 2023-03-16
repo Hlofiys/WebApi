@@ -134,6 +134,7 @@ namespace WebApi.Services.OrderService
                     Shipping = order.Shipping,
                     Contact = order.Contact,
                     PhoneNubmer = order.PhoneNubmer,
+                    Id = order.Id,
                 };
                 OrderAllDtos.Add(cartAll);
             }
