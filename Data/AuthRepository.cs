@@ -37,6 +37,13 @@ namespace WebApi.Data
                 response.Success = false;
                 response.Message = "Wrong password.";
             }
+            else if(user.IsActivated is false)
+            {
+                response.Success = false;
+                response.Message = "Account is not activated";
+                response.StatusCode = 403;
+                return response;
+            }
             else
             {
                 await CreateRefreshToken(user, httpResponse, httpRequest);

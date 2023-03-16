@@ -22,33 +22,22 @@ namespace WebApi.Services.CartService
         {
             var response = new ServiceResponse<string>();
             var token = request.Headers["x-access-token"].ToString();
-            JwtSecurityToken? jwttoken;
-            if (token is not null)
+            var UserSearchResult = UserSearch(token);
+            if(UserSearchResult!.StatusCode == 401)
             {
-                jwttoken = TokenService.TokenService.ValidateToken(token, _configuration);
-            }
-            else
-            {
-                response.Success = false;
-                return response;
-            }
-            if (jwttoken is null)
-            {
-                response.Success = false;
                 response.StatusCode = 401;
-                return response;
-            }
-            var userIdString = jwttoken.Claims.First(x => x.Type == "nameid").Value;
-            int userId = int.Parse(userIdString);
-            var user = _context.Users.ToList().Find(u => u.Id == userId);
-            if (user is null) {
                 response.Success = false;
                 return response;
             }
-
+            if(UserSearchResult!.Success == false)
+            {
+                response.Success = false;
+                return response;
+            }
+            var user = UserSearchResult.Data!;
             var item = _context.Items.ToList().Find(u => u.Id == itemId);
 
-            if(item is null)
+            if (item is null)
             {
                 response.Success = false;
                 return response;
@@ -63,10 +52,12 @@ namespace WebApi.Services.CartService
             else
             {
                 cart = _context.Carts.ToList().Find(c => c.Id == user.CartId)!;
-                if(cart is null){
+                if (cart is null)
+                {
                     cartExists = false;
                     cart = new Cart();
-                } else
+                }
+                else
                 {
                     cartExists = true;
                     if (_context.CartItems.ToList().Find(c => c.CartId == cart.Id && c.ItemId == itemId) is not null)
@@ -75,13 +66,13 @@ namespace WebApi.Services.CartService
                         response.Message = "This item is already in the cart";
                         return response;
                     }
-                } 
+                }
             }
             bool VariantExists;
             int TotalVariantsPrice = 0;
             Kit? Kit = null;
             List<Variant> FoundVariants = new();
-            if(Variants is not null)
+            if (Variants is not null)
             {
                 List<Kit> kits = _context.Kits.ToList().FindAll(k => k.ItemId == itemId);
                 bool isArrayEqual = true;
@@ -105,30 +96,37 @@ namespace WebApi.Services.CartService
                         isArrayEqual = false;
                     }
                 }
-                if(FoundVariants.Count == 0)
+                if (FoundVariants.Count == 0)
                 {
                     Kit = null;
                     foreach (var variant in Variants)
                     {
                         if (variant > 0)
                         {
-                            FoundVariants?.Add(_context.Variants.ToList().Find(v => v.VariantId == variant && v.ItemId == item.Id)!);
+                            var FoundVariant = _context.Variants.ToList().Find(v => v.VariantId == variant && v.ItemId == item.Id)!;
+                            if(FoundVariant is null)
+                            {
+                                response.Success = false;
+                                response.Message = "This variant does not exist";
+                                return response;
+                            }
+                            FoundVariants?.Add(FoundVariant);
                             if (!FoundVariants!.Any())
                             {
                                 response.Success = false;
-                                response.Message = "This option is not";
+                                response.Message = "This variant does not exist";
                                 return response;
                             }
                         }
                         else
                         {
                             response.Success = false;
-                            response.Message = "This option is not";
+                            response.Message = "This variant does not exist";
                             return response;
                         }
                     }
                 }
-                
+
                 foreach (var variant in FoundVariants!)
                 {
                     TotalVariantsPrice += (int)variant.Price!;
@@ -142,21 +140,22 @@ namespace WebApi.Services.CartService
             int ItemPrice = 0;
             if (cartExists)
             {
-                if(!VariantExists)
+                if (!VariantExists)
                 {
                     ItemPrice = (int)(item.Price * itemAmount)!;
-                    if (cart.TotalPrice is null)
+                    if (cart.TotalPrice == 0)
                     {
-                        cart.TotalPrice = item.Price * itemAmount;
+                        cart.TotalPrice = (int)(item.Price * itemAmount)!;
                     }
                     else
                     {
-                        cart.TotalPrice += item.Price * itemAmount;
+                        cart.TotalPrice += (int)item.Price! * itemAmount;
                     }
-                }else
+                }
+                else
                 {
                     ItemPrice = TotalVariantsPrice * itemAmount;
-                    if (cart.TotalPrice is null)
+                    if (cart.TotalPrice == 0)
                     {
                         cart.TotalPrice = TotalVariantsPrice * itemAmount;
                     }
@@ -165,7 +164,7 @@ namespace WebApi.Services.CartService
                         cart.TotalPrice += TotalVariantsPrice * itemAmount;
                     }
                 }
-                
+
 
                 _context.Update(cart);
             }
@@ -176,19 +175,19 @@ namespace WebApi.Services.CartService
                 if (!VariantExists)
                 {
                     ItemPrice = (int)(item.Price * itemAmount)!;
-                    if (cart.TotalPrice is null)
+                    if (cart.TotalPrice == 0)
                     {
-                        cart.TotalPrice = item.Price * itemAmount;
+                        cart.TotalPrice = (int)(item.Price * itemAmount)!;
                     }
                     else
                     {
-                        cart.TotalPrice += item.Price * itemAmount;
+                        cart.TotalPrice += (int)(item.Price * itemAmount)!;
                     }
                 }
                 else
                 {
                     ItemPrice = TotalVariantsPrice * itemAmount;
-                    if (cart.TotalPrice is null)
+                    if (cart.TotalPrice == 0)
                     {
                         cart.TotalPrice = TotalVariantsPrice * itemAmount;
                     }
@@ -209,7 +208,7 @@ namespace WebApi.Services.CartService
                 ItemId = item.Id,
                 Price = ItemPrice,
             };
-            if(Kit is not null)
+            if (Kit is not null)
             {
                 cartItem.Kit = Kit.KitId;
             }
@@ -219,7 +218,7 @@ namespace WebApi.Services.CartService
             }
 
             _context.CartItems.Add(cartItem);
-            
+
             _context.SaveChanges();
 
             response.Data = "";
@@ -230,56 +229,45 @@ namespace WebApi.Services.CartService
         {
             var response = new ServiceResponse<CartAllDto>();
             var token = request.Headers["x-access-token"].ToString();
-            JwtSecurityToken? jwttoken;
-            if (token is not null)
+            var UserSearchResult = UserSearch(token);
+            if (UserSearchResult!.StatusCode == 401)
             {
-                jwttoken = TokenService.TokenService.ValidateToken(token, _configuration);
-            }
-            else
-            {
-                response.Success = false;
-                return response;
-            }
-            if (jwttoken is null)
-            {
-                response.Success = false;
                 response.StatusCode = 401;
+                response.Success = false;
                 return response;
             }
-            var userIdString = jwttoken.Claims.First(x => x.Type == "nameid").Value;
-            int userId = int.Parse(userIdString);
-            var user = _context.Users.ToList().Find(u => u.Id == userId);
-            if (user is null)
+            if (UserSearchResult!.Success == false)
             {
                 response.Success = false;
                 return response;
             }
-            if(user.CartId is null)
+            var user = UserSearchResult.Data!;
+            if (user.CartId is null)
             {
                 response.Success = false;
                 response.Message = "The user has no products";
                 return response;
             }
             var cart = _context.Carts.ToList().Find(c => c.Id == user.CartId);
-            if(cart is null)
+            if (cart is null)
             {
                 response.Success = false;
                 response.Message = "The user has no products";
                 return response;
             }
             var CartItems = _context.CartItems.ToList().FindAll(c => c.CartId == cart.Id);
-            if(CartItems is null || CartItems.Count == 0)
+            if (CartItems is null || CartItems.Count == 0)
             {
                 response.Success = false;
                 response.Message = "The user has no products";
                 return response;
             }
             List<CartItemDto> itemDtos = new List<CartItemDto>();
-            foreach ( var item in CartItems)
+            foreach (var item in CartItems)
             {
                 var FoundItem = _context.Items.ToList().Find(i => i.Id == item.ItemId);
                 if (FoundItem is null) continue;
-                List<Variant>? FoundVariants = new ();
+                List<Variant>? FoundVariants = new();
                 Kit? FoundKit = null;
                 if (item.Variants is not null)
                 {
@@ -302,9 +290,9 @@ namespace WebApi.Services.CartService
                     return response;
                 }
 
-                if(item.Kit is not null)
+                if (item.Kit is not null)
                 {
-                    FoundKit = _context.Kits.ToList().Find(k => k.KitId== item.Kit && k.ItemId == item.ItemId);
+                    FoundKit = _context.Kits.ToList().Find(k => k.KitId == item.Kit && k.ItemId == item.ItemId);
                 };
 
                 if (FoundKit is null && item.Kit is not null)
@@ -313,8 +301,8 @@ namespace WebApi.Services.CartService
                     response.Message = "Error finding product kit";
                     return response;
                 }
-                List<VariantDto>? variantDto= new ();
-                if(FoundVariants is not null)
+                List<VariantDto>? variantDto = new();
+                if (FoundVariants is not null)
                 {
                     foreach (var var in FoundVariants)
                     {
@@ -332,13 +320,13 @@ namespace WebApi.Services.CartService
                     Price = item.Price,
                     Variants = variantDto switch
                     {
-                       null => null,
-                       _ => variantDto.ToArray(),
+                        null => null,
+                        _ => variantDto.ToArray(),
                     },
                     Kit = _mapper.Map<KitDto>(FoundKit),
                 };
                 itemDtos.Add(itemDto);
-                
+
             }
             if (itemDtos.Count == 0)
             {
@@ -359,30 +347,19 @@ namespace WebApi.Services.CartService
         {
             var response = new ServiceResponse<int>();
             var token = request.Headers["x-access-token"].ToString();
-            JwtSecurityToken? jwttoken;
-            if (token is not null)
+            var UserSearchResult = UserSearch(token);
+            if (UserSearchResult!.StatusCode == 401)
             {
-                jwttoken = TokenService.TokenService.ValidateToken(token, _configuration);
-            }
-            else
-            {
-                response.Success = false;
-                return response;
-            }
-            if (jwttoken is null)
-            {
-                response.Success = false;
                 response.StatusCode = 401;
+                response.Success = false;
                 return response;
             }
-            var userIdString = jwttoken.Claims.First(x => x.Type == "nameid").Value;
-            int userId = int.Parse(userIdString);
-            var user = _context.Users.ToList().Find(u => u.Id == userId);
-            if (user is null)
+            if (UserSearchResult!.Success == false)
             {
                 response.Success = false;
                 return response;
             }
+            var user = UserSearchResult.Data!;
             if (user.CartId is null)
             {
                 response.Data = 0;
@@ -408,30 +385,19 @@ namespace WebApi.Services.CartService
         {
             var response = new ServiceResponse<string>();
             var token = request.Headers["x-access-token"].ToString();
-            JwtSecurityToken? jwttoken;
-            if (token is not null)
+            var UserSearchResult = UserSearch(token);
+            if (UserSearchResult!.StatusCode == 401)
             {
-                jwttoken = TokenService.TokenService.ValidateToken(token, _configuration);
-            }
-            else
-            {
-                response.Success = false;
-                return response;
-            }
-            if (jwttoken is null)
-            {
-                response.Success = false;
                 response.StatusCode = 401;
+                response.Success = false;
                 return response;
             }
-            var userIdString = jwttoken.Claims.First(x => x.Type == "nameid").Value;
-            int userId = int.Parse(userIdString);
-            var user = _context.Users.ToList().Find(u => u.Id == userId);
-            if (user is null)
+            if (UserSearchResult!.Success == false)
             {
                 response.Success = false;
                 return response;
             }
+            var user = UserSearchResult.Data!;
             if (user.CartId is null)
             {
                 response.Success = false;
@@ -452,27 +418,27 @@ namespace WebApi.Services.CartService
                 response.Message = "The user does not have a product with this id";
                 return response;
             }
-            if(Variants is not null)
+            if (Variants is not null)
             {
-                if(CartItem?.Variants?.Length > 0) 
+                if (CartItem?.Variants?.Length > 0)
                 {
                     int OriginalVariantsLength = CartItem.Variants.Length;
                     foreach (var variant in CartItem?.Variants!)
                     {
-                        if(Variants.Contains(variant))
+                        if (Variants.Contains(variant))
                         {
-                            cart.TotalPrice -= (int)_context.Variants.ToList().Find(v => v.VariantId == variant && v?.ItemId == Id)?.Price! * CartItem?.Amount;
+                            cart.TotalPrice -= (int)_context.Variants.ToList().Find(v => v.VariantId == variant && v?.ItemId == Id)?.Price! * (int)CartItem?.Amount!;
                             CartItem!.Variants = CartItem?.Variants!.Where(v => v != variant).ToArray();
-                            
+
                         }
-                        if(CartItem?.Variants is null || CartItem?.Variants.Length == 0)
+                        if (CartItem?.Variants is null || CartItem?.Variants.Length == 0)
                         {
-                            cart.TotalPrice += _context.Items.ToList().Find(i => i.Id == CartItem?.ItemId)?.Price * CartItem?.Amount;
+                            cart.TotalPrice += (int)_context.Items.ToList().Find(i => i.Id == CartItem?.ItemId)?.Price! * (int)CartItem?.Amount!;
                             CartItem!.Price = (int)(_context.Items.ToList().Find(i => i.Id == CartItem?.ItemId)?.Price * CartItem?.Amount)!;
                             break;
                         }
                     }
-                    if(OriginalVariantsLength != CartItem?.Variants?.Length)
+                    if (OriginalVariantsLength != CartItem?.Variants?.Length)
                     {
                         _context.CartItems.Update(CartItem!);
                         _context.Carts.Update(cart);
@@ -486,12 +452,12 @@ namespace WebApi.Services.CartService
                         return response;
                     }
                 }
-                else if(CartItem?.Kit is not null)
+                else if (CartItem?.Kit is not null)
                 {
                     List<int> NewVariants = new();
                     var Kit = _context.Kits.ToList().Find(k => k.KitId == CartItem?.Kit && k.ItemId == CartItem?.ItemId);
-                    if(Kit is not null)
-                        {
+                    if (Kit is not null)
+                    {
                         foreach (var variant in Kit?.Variants!)
                         {
                             if (!Variants.Contains(variant))
@@ -499,7 +465,7 @@ namespace WebApi.Services.CartService
                                 NewVariants.Add(variant);
                             }
                         }
-                        if(NewVariants.Count > 0)
+                        if (NewVariants.Count > 0)
                         {
                             List<Kit> kits = _context.Kits.ToList().FindAll(k => k.ItemId == CartItem?.ItemId);
                             Kit? NewKit = null;
@@ -521,9 +487,9 @@ namespace WebApi.Services.CartService
                                 }
                             }
 
-                            if(NewKit is not null)
+                            if (NewKit is not null)
                             {
-                                cart.TotalPrice -= Kit.Price * CartItem.Amount;
+                                cart.TotalPrice -= (int)Kit.Price! * CartItem.Amount;
                                 CartItem.Price = (int)NewKit.Price! * CartItem.Amount;
                                 cart.TotalPrice += (int)NewKit.Price! * CartItem.Amount;
                                 CartItem.Kit = NewKit.KitId;
@@ -538,7 +504,7 @@ namespace WebApi.Services.CartService
                             {
                                 TotalPrice += (int)_context.Variants.ToList().Find(v => v.VariantId == variant && v.ItemId == CartItem?.ItemId)?.Price! * CartItem.Amount;
                             }
-                            cart.TotalPrice -= Kit.Price * CartItem.Amount;
+                            cart.TotalPrice -= (int)Kit.Price! * CartItem.Amount;
                             CartItem.Price = TotalPrice;
                             cart.TotalPrice += TotalPrice;
                             CartItem.Kit = null;
@@ -547,11 +513,11 @@ namespace WebApi.Services.CartService
                             _context.Carts.Update(cart);
                             _context.SaveChanges();
                             return response;
-                        } 
-                        else if(NewVariants.Count == 0)
+                        }
+                        else if (NewVariants.Count == 0)
                         {
-                            cart.TotalPrice -= Kit.Price * CartItem.Amount;
-                            cart.TotalPrice += _context.Items.ToList().Find(i => i.Id == CartItem?.ItemId)?.Price * CartItem.Amount;
+                            cart.TotalPrice -= (int)Kit.Price! * CartItem.Amount;
+                            cart.TotalPrice += (int)_context.Items.ToList().Find(i => i.Id == CartItem?.ItemId)?.Price! * (int)CartItem.Amount;
                             CartItem.Price = (int)(_context.Items.ToList().Find(i => i.Id == CartItem?.ItemId)?.Price * CartItem.Amount)!;
                             CartItem.Kit = null;
                             CartItem.Variants = null;
@@ -583,28 +549,28 @@ namespace WebApi.Services.CartService
             }
             else
             {
-                if(CartItem.Kit!= null)
+                if (CartItem.Kit != null)
                 {
-                    cart.TotalPrice -= _context.Kits.ToList().Find(k => k.KitId == CartItem?.Kit && k.ItemId == CartItem.ItemId)?.Price * CartItem.Amount;
+                    cart.TotalPrice -= (int)_context.Kits.ToList().Find(k => k.KitId == CartItem?.Kit && k.ItemId == CartItem.ItemId)?.Price! * CartItem.Amount;
                     _context.CartItems.Remove(CartItem);
                     _context.Carts.Update(cart);
                     _context.SaveChanges();
                     return response;
                 }
-                else if(CartItem.Variants!= null)
+                else if (CartItem.Variants != null)
                 {
                     foreach (var variant in CartItem.Variants)
                     {
-                        cart.TotalPrice -= _context.Variants.ToList().Find(v => v.VariantId == variant && v.ItemId == CartItem.ItemId)?.Price * CartItem.Amount;
+                        cart.TotalPrice -= (int)_context.Variants.ToList().Find(v => v.VariantId == variant && v.ItemId == CartItem.ItemId)?.Price! * CartItem.Amount;
                     }
                     _context.CartItems.Remove(CartItem);
                     _context.Carts.Update(cart);
                     _context.SaveChanges();
                     return response;
                 }
-                cart.TotalPrice -= _context.Items.ToList().Find(i => i.Id == CartItem?.ItemId)?.Price * CartItem.Amount;
+                cart.TotalPrice -= (int)_context.Items.ToList().Find(i => i.Id == CartItem?.ItemId)?.Price! * CartItem.Amount;
                 _context.CartItems.Remove(CartItem);
-                _context.Carts.Update(cart);    
+                _context.Carts.Update(cart);
                 _context.SaveChanges();
                 return response;
             }
@@ -615,30 +581,19 @@ namespace WebApi.Services.CartService
         {
             var response = new ServiceResponse<CartAllDto>();
             var token = request.Headers["x-access-token"].ToString();
-            JwtSecurityToken? jwttoken;
-            if (token is not null)
+            var UserSearchResult = UserSearch(token);
+            if (UserSearchResult!.StatusCode == 401)
             {
-                jwttoken = TokenService.TokenService.ValidateToken(token, _configuration);
-            }
-            else
-            {
-                response.Success = false;
-                return response;
-            }
-            if (jwttoken is null)
-            {
-                response.Success = false;
                 response.StatusCode = 401;
+                response.Success = false;
                 return response;
             }
-            var userIdString = jwttoken.Claims.First(x => x.Type == "nameid").Value;
-            int userId = int.Parse(userIdString);
-            var user = _context.Users.ToList().Find(u => u.Id == userId);
-            if (user is null)
+            if (UserSearchResult!.Success == false)
             {
                 response.Success = false;
                 return response;
             }
+            var user = UserSearchResult.Data!;
             if (user.CartId is null)
             {
                 response.Success = false;
@@ -691,12 +646,12 @@ namespace WebApi.Services.CartService
                 // Проверяем указано ли новое кол-во товара, и если да - обновляем цену корзины
                 if (Amount is not null)
                 {
-                    cart.TotalPrice -= CartItem?.Price;
+                    cart.TotalPrice -= (int)CartItem?.Price!;
                     var TempPrice = CartItem?.Price / CartItem?.Amount;
                     TempPrice = (int)(TempPrice! * Amount);
                     CartItem!.Price = (int)TempPrice;
                     CartItem.Amount = (int)Amount!;
-                    cart.TotalPrice += CartItem?.Price;
+                    cart.TotalPrice += (int)CartItem?.Price!;
                 }
                 // Ищем указанные варианты товара и заносим в коллекцию
                 List<Variant> NewVariants = new();
@@ -721,7 +676,7 @@ namespace WebApi.Services.CartService
                 Kit kit = new();
                 int[]? NewVariantsIds = null;
 
-                if(CartItem?.Variants is not null)
+                if (CartItem?.Variants is not null)
                 {
                     foreach (var variant in CartItem?.Variants!)
                     {
@@ -731,10 +686,11 @@ namespace WebApi.Services.CartService
                     NewVariantsIds = Variants.ToArray().Union(CartItem?.Variants!).ToArray();
                     Array.Sort(NewVariantsIds);
 
-                } else if(CartItem?.Kit is not null)
+                }
+                else if (CartItem?.Kit is not null)
                 {
                     kit = _context.Kits.ToList().Find(k => k.KitId == CartItem.Kit && k.ItemId == Id)!;
-                    if(kit is null)
+                    if (kit is null)
                     {
                         response.Success = false;
                         response.Message = "Error";
@@ -747,7 +703,7 @@ namespace WebApi.Services.CartService
 
                     NewVariantsIds = Variants.ToArray().Union(kit?.Variants!).ToArray();
                     Array.Sort(NewVariantsIds);
-                    if(NewVariantsIds.Length == 0) 
+                    if (NewVariantsIds.Length == 0)
                     {
                         response.Success = false;
                         response.Message = "Error";
@@ -807,33 +763,35 @@ namespace WebApi.Services.CartService
                 }
                 int ItemPrice = 0;
                 ItemPrice = (int)(TotalVariantsPrice * CartItem?.Amount)!;
-                if(CartItem!.Kit is not null)
+                if (CartItem!.Kit is not null)
                 {
                     cart.TotalPrice -= (int)(_context.Kits.ToList().Find(k => k.KitId == CartItem!.Kit && k.ItemId == CartItem!.ItemId)!.Price * CartItem?.Amount)!;
-                } else if(CartItem!.Variants is not null) 
+                }
+                else if (CartItem!.Variants is not null)
                 {
                     foreach (var variant in CartItem!.Variants)
                     {
                         cart.TotalPrice -= (int)(_context.Variants.ToList().Find(v => v.VariantId == variant && v.ItemId == CartItem!.ItemId)!.Price * CartItem?.Amount)!;
                     }
-                } else
+                }
+                else
                 {
                     cart.TotalPrice -= (int)(_context.Items.ToList().Find(i => i.Id == CartItem!.ItemId)!.Price * CartItem?.Amount)!;
                 }
-                
+
                 cart.TotalPrice += (int)(TotalVariantsPrice * CartItem?.Amount)!;
                 CartItem!.Price = (int)(TotalVariantsPrice * CartItem?.Amount)!;
                 _context.Carts.Update(cart);
 
                 if (Kit is not null)
                 {
-                   CartItem!.Kit = Kit.KitId;
-                   CartItem!.Variants = null;
+                    CartItem!.Kit = Kit.KitId;
+                    CartItem!.Variants = null;
                 }
                 else
                 {
-                   CartItem!.Kit = null;
-                   CartItem!.Variants = NewVariantsIds;
+                    CartItem!.Kit = null;
+                    CartItem!.Variants = NewVariantsIds;
                 }
 
                 _context.CartItems.Update(CartItem);
@@ -846,30 +804,60 @@ namespace WebApi.Services.CartService
                 return response;
 
 
-        }
-        else if (Amount is not null)
-        {
-             cart.TotalPrice -= CartItem?.Price;
-             var TempPrice = CartItem?.Price / CartItem?.Amount;
-             TempPrice = (int)(TempPrice! * Amount);
-             CartItem!.Price = (int)TempPrice;
-             CartItem.Amount = (int)Amount!;
-             cart.TotalPrice += CartItem?.Price;
-             _context.Carts.Update(cart);
-             _context.CartItems.Update(CartItem!);
-             _context.SaveChanges();
-             var all = await All(request);
+            }
+            else if (Amount is not null)
+            {
+                cart.TotalPrice -= (int)CartItem?.Price!;
+                var TempPrice = CartItem?.Price / CartItem?.Amount;
+                TempPrice = (int)(TempPrice! * Amount);
+                CartItem!.Price = (int)TempPrice;
+                CartItem.Amount = (int)Amount!;
+                cart.TotalPrice += (int)CartItem?.Price!;
+                _context.Carts.Update(cart);
+                _context.CartItems.Update(CartItem!);
+                _context.SaveChanges();
+                var all = await All(request);
 
-             response.Data = all.Data;
+                response.Data = all.Data;
 
-             return response;
+                return response;
+            }
+            else
+            {
+                response.Success = false;
+                response.Message = "Specify fields for updating";
+                return response;
+            }
         }
-        else
+        public ServiceResponse<User>? UserSearch(string token)
         {
-             response.Success = false;
-             response.Message = "Specify fields for updating";
-             return response;
-        }
+            var response = new ServiceResponse<User>();
+            JwtSecurityToken? jwttoken;
+            if (token is not null)
+            {
+                jwttoken = TokenService.TokenService.ValidateToken(token, _configuration);
+            }
+            else
+            {
+                response.Success = false;
+                return response;
+            }
+            if (jwttoken is null)
+            {
+                response.Success = false;
+                response.StatusCode = 401;
+                return response;
+            }
+            var userIdString = jwttoken.Claims.First(x => x.Type == "nameid").Value;
+            int userId = int.Parse(userIdString);
+            var user = _context.Users.ToList().Find(u => u.Id == userId);
+            if (user is null)
+            {
+                response.Success = false;
+                return response;
+            }
+            response.Data = user;
+            return response;
         }
     }
 }
