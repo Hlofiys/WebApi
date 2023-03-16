@@ -10,6 +10,7 @@
         public string PhoneNubmer { get; set; } = string.Empty;
         public string? Contact { get; set; } = string.Empty;
         public int TotalPrice { get; set; } = 0;
+        public int? ZipCode { get; set; } = null;
 
     }
 }
