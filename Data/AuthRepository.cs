@@ -323,6 +323,14 @@ namespace WebApi.Data
             {
                 _context.CartItems.Remove(cartItem);
             }
+            foreach (var order in _context.Orders)
+            {
+                _context.Orders.Remove(order);
+            }
+            foreach (var orderItem in _context.OrderItems)
+            {
+                _context.OrderItems.Remove(orderItem);
+            }
             await _context.SaveChangesAsync();
             return response;
         }
