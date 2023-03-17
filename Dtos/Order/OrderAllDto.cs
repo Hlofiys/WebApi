@@ -9,8 +9,8 @@ namespace WebApi.Dtos.Order
         public string Address { get; set; } = string.Empty;
         public string FIO { get; set; } = string.Empty;
         public string PhoneNubmer { get; set; } = string.Empty;
-        public string? Contact { get; set; } = string.Empty;
-        public int? ZipCode { get; set; } = null;
+        public string Contact { get; set; } = string.Empty;
+        public string? ZipCode { get; set; } = null;
         public string City { get; set; } = string.Empty;
         public List<CartItemDto>? CartItems { get; set; } = null;
         public int TotalPrice { get; set; } = 0;

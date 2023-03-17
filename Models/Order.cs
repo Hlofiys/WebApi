@@ -8,7 +8,7 @@
         public string Address { get; set; } = string.Empty;
         public string FIO { get; set; } = string.Empty;
         public string PhoneNubmer { get; set; } = string.Empty;
-        public int? ZipCode { get; set; } = null;
+        public string ZipCode { get; set; } = string.Empty;
         public string City { get; set; } = string.Empty;
         public string? Contact { get; set; } = string.Empty;
         public int TotalPrice { get; set; } = 0;

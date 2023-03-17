@@ -132,7 +132,7 @@ namespace WebApi.Services.OrderService
                     FIO = order.FIO,
                     Address= order.Address,
                     Shipping = order.Shipping,
-                    Contact = order.Contact,
+                    Contact = order.Contact!,
                     PhoneNubmer = order.PhoneNubmer,
                     Id = order.Id,
                     ZipCode= order.ZipCode,
