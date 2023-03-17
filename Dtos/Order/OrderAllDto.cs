@@ -11,6 +11,7 @@ namespace WebApi.Dtos.Order
         public string PhoneNubmer { get; set; } = string.Empty;
         public string? Contact { get; set; } = string.Empty;
         public int? ZipCode { get; set; } = null;
+        public string City { get; set; } = string.Empty;
         public List<CartItemDto>? CartItems { get; set; } = null;
         public int TotalPrice { get; set; } = 0;
     }

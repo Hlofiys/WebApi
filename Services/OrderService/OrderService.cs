@@ -136,6 +136,7 @@ namespace WebApi.Services.OrderService
                     PhoneNubmer = order.PhoneNubmer,
                     Id = order.Id,
                     ZipCode= order.ZipCode,
+                    City= order.City,
                 };
                 OrderAllDtos.Add(cartAll);
             }
