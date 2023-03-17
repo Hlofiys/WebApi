@@ -244,21 +244,18 @@ namespace WebApi.Services.CartService
             var user = UserSearchResult.Data!;
             if (user.CartId is null)
             {
-                response.Success = false;
                 response.Message = "The user has no products";
                 return response;
             }
             var cart = _context.Carts.ToList().Find(c => c.Id == user.CartId);
             if (cart is null)
             {
-                response.Success = false;
                 response.Message = "The user has no products";
                 return response;
             }
             var CartItems = _context.CartItems.ToList().FindAll(c => c.CartId == cart.Id);
             if (CartItems is null || CartItems.Count == 0)
             {
-                response.Success = false;
                 response.Message = "The user has no products";
                 return response;
             }

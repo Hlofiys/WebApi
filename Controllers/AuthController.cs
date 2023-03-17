@@ -68,7 +68,7 @@ namespace WebApi.Controllers
         public ActionResult<ServiceResponse<string>> checkToken()
         {
             var response =   _authRepo.CheckToken(Request);
-            var MapperResponse = _mapper.Map<ServiceResponseDto<String>>(response);
+            var MapperResponse = _mapper.Map<ServiceResponseDto<string>>(response);
             if(response.StatusCode == 401) return Unauthorized(MapperResponse);
             if(!response.Success)
             {
@@ -81,7 +81,7 @@ namespace WebApi.Controllers
         public async Task<ActionResult<ServiceResponse<string>>> Refresh()
         {
             var response =  await _authRepo.Refresh(Request, Response);
-            var MapperResponse = _mapper.Map<ServiceResponseDto<String>>(response);
+            var MapperResponse = _mapper.Map<ServiceResponseDto<string>>(response);
             if(response.StatusCode == 401) return Unauthorized(MapperResponse);
             if(response.StatusCode == 403) return Unauthorized(MapperResponse);
             if(!response.Success)

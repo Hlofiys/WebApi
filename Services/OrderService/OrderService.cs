@@ -39,7 +39,6 @@ namespace WebApi.Services.OrderService
             var orders = _context.Orders.ToList().FindAll(o => o.UserId == user.Id);
             if (!orders.Any())
             {
-                response.Success = false;
                 response.Message = "The user has no orders";
                 return response;
             }
@@ -49,8 +48,7 @@ namespace WebApi.Services.OrderService
                 var OrderItems = _context.OrderItems.ToList().FindAll(o => o.OrderId == order.Id);
                 if (OrderItems is null || OrderItems.Count == 0)
                 {
-                    response.Success = false;
-                    response.Message = "The user has no products";
+                    response.Message = "The user has no orders";
                     return response;
                 }
                 List<CartItemDto> itemDtos = new List<CartItemDto>();
