@@ -94,7 +94,7 @@ if (app.Environment.IsDevelopment())
 
 app.MapGet("api/addItems",  async (DataContext db) => {
   StartUp startUp = new StartUp(db);
-  await startUp.AddTypes().ContinueWith(async i => await startUp.AddItems());
+    await startUp.AddItems();
 });
 
 app.UseCors(options => options.WithOrigins("http://localhost:3000", "https://kirikkostya.github.io").AllowCredentials().AllowAnyHeader().AllowAnyMethod());

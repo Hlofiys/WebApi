@@ -35,7 +35,7 @@ namespace WebApi.Controllers
                 return BadRequest(serviceResponse);
             }
             var response = await _orderService.Create(
-                new Order { FIO = request.FIO, Address = request.Address, Contact = request.Contact, PhoneNubmer = request.PhoneNumber, Shipping = Shipping , ZipCode = request.ZipCode, City = request.City}, Request);
+                new Order { FIO = request.FIO, Address = request.Address, Contact = request.Contact, PhoneNubmer = request.PhoneNumber, Shipping = Shipping , ZipCode = request.ZipCode, City = request.City, Date = request.Date}, Request);
             var MapperResponse = _mapper.Map<ServiceResponseDto<string>>(response);
             if (!response.Success)
             {

@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Http.HttpResults;
-using static System.Net.Mime.MediaTypeNames;
-
 namespace WebApi
 {
     public class StartUp
@@ -13,7 +10,6 @@ namespace WebApi
         }
         public async Task AddItems()
         {
-            var types = _context.Types.ToList();
             int index = 1;
             if (!ItemExists(index))
             {
@@ -25,11 +21,11 @@ namespace WebApi
                 {
                     Id = index,
                     Name = "Подставка",
-                    Description = "",
+                    Description = "Подставка – органайзер выполнена из гипсобетона, он прочнее и тяжелее гипса. Покрыта лаком. Изделие не боится влажной уборки, но использовать подставку декоративную под водой мы не рекомендуем, достаточно протереть влажной тряпочкой, салфеткой. На изделии могут быть воздушные пузырьки, это не является браком, а наоборот придает изюминку. Может быть исполнена в разных техниках и цветах. Упаковывается в бумажный пакет. Изготовлено вручную.",
                     Price = 10,
                     Icon = images,
-                    TypeId = types.Find(i => i.Id == 1)?.Id.ToString()!,
                     Video = "https://api.native-flora.tk/media/get/podstavki?name=1_video.mp4",
+                    Sizes = new List<string> { "Материал: гипсобетон", "Длина: 18 см", "Ширина: 9,5 см" }
                 };
                 Variant variant1 = new Variant
                 {
@@ -45,7 +41,7 @@ namespace WebApi
                 {
                     VariantId = 2,
                     Name = "Шкатулка",
-                    Description = "",
+                    Description = "Шкатулка выполнена из гипсобетона, экологически безопасна и гипоаллергенна. Покрыта лаком. Ее можно использовать для хранения украшений или как подсвечник, установив в нее чайную свечу. Изготовлено вручную. Цвет и дизайн возможен любой.",
                     Price = 20,
                     Icon = images3,
                     Video = "",
@@ -80,11 +76,11 @@ namespace WebApi
                 {
                     Id = index,
                     Name = "Лилу",
-                    Description = "",
+                    Description = "Декоративное кашпо «Лилу» из высокопрочного гипса. Покрыто моющейся краской. Изготовлено вручную. Варианты использования: 1. Подставка для кистей и косметики; 2. Кашпо для цветов и сухоцветов; 3. Подставка для столовых приборов; 4. Органайзер для карандашей, ручек; 5. Ваза для конфет. Шарик съемный, находится внутри кашпо, крепится отдельно. Каждое изделие упаковывается в отдельную коробку. Не наливайте воду в изделие, используйте дополнительную емкость! Используйте цветы, не требующие обильного полива. Цвет и дизайн возможен любой.",
                     Price = 55,
                     Icon = images1,
-                    TypeId = types.Find(i => i.Id == 3)?.Id.ToString()!,
                     Video = "https://api.native-flora.tk/media/get/lilu?name=1_video.mp4",
+                    Sizes = new List<string> {"Материал: гипс","Вес: 2,1 кг","Высота: 21 см","Глубина (отверстия): 7 см","Диаметр: 8 см"}
                 };
                 Variant variant1 = new Variant
                 {
@@ -92,7 +88,7 @@ namespace WebApi
                     Name = "Стрелки",
                     Description = "",
                     Price = 58,
-                    Icon = images1,
+                    Icon = images2,
                     Video = "",
                     ItemId = index,
                 };
@@ -112,7 +108,7 @@ namespace WebApi
                     Name = "Патчи",
                     Description = "",
                     Price = 60,
-                    Icon = images3,
+                    Icon = images4,
                     Video = "",
                     ItemId = index,
                 };
@@ -178,9 +174,9 @@ namespace WebApi
                 {
                     Id = index,
                     Name = "Берни",
-                    Description = "",
+                    Description = "Органайзер «Берни» выполнен из высокопрочного гипса. Дизайнерский, оригинальный подарок на любой праздник или мероприятие. Можно использовать как ключницу, органайзер под различную мелочь, конфетницу или просто как интерьерное украшение. Изготовлено вручную. Каждое изделие упаковывается в отдельную коробку. Не наливайте воду в изделие! Цвет и дизайн возможен любой.",
                     Price = 45,
-                    TypeId = types.Find(i => i.Id == 4)?.Id.ToString()!,
+                    Sizes = new List<string> {"Материал: гипс","Вес: 1,1 кг","Высота: 14 см","Глубина: 12 см","Ширина: 20 см"}
                 };
                 Variant variant1 = new Variant
                 {
@@ -202,73 +198,6 @@ namespace WebApi
         {
             var items = _context.Items.ToList();
             if (items.Find(i => i.Id == id) is not null)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public async Task AddTypes()
-        {
-            int index = 1;
-            if (!TypeExists(index))
-            {
-                Models.Type type = new Models.Type
-                {
-                    Id = index,
-                    Name = "Подставка",
-                    Description = "",
-                    Price = 10,
-                    Icon = "https://api.native-flora.tk/media/get/podstavki?name=1_main.png"
-                };
-                _context.Types.Add(type);
-            }
-            index++;
-            if (!TypeExists(index))
-            {
-                Models.Type type = new Models.Type
-                {
-                    Id = index,
-                    Name = "Шкатулка",
-                    Description = "",
-                    Price = 15,
-                    Icon = ""
-                };
-                _context.Types.Add(type);
-            }
-            index++;
-            if (!TypeExists(index))
-            {
-                Models.Type type = new Models.Type
-                {
-                    Id = index,
-                    Name = "Лилу",
-                    Description = "",
-                    Price = 55,
-                    Icon = "https://api.native-flora.tk/media/get/lilu?name=2_second.png"
-                };
-                _context.Types.Add(type);
-            }
-            index++;
-            if (!TypeExists(index))
-            {
-                Models.Type type = new Models.Type
-                {
-                    Id = index,
-                    Name = "Берни",
-                    Description = "",
-                    Price = 45,
-                    Icon = ""
-                };
-                _context.Types.Add(type);
-            }
-            _context.SaveChanges();
-        }
-
-        private bool TypeExists(int id)
-        {
-            var types = _context.Types.ToList();
-            if (types.Find(i => i.Id == id) is not null)
             {
                 return true;
             }

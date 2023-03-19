@@ -135,6 +135,7 @@ namespace WebApi.Services.OrderService
                     Id = order.Id,
                     ZipCode= order.ZipCode,
                     City= order.City,
+                    Date = order.Date
                 };
                 OrderAllDtos.Add(cartAll);
             }
@@ -187,6 +188,12 @@ namespace WebApi.Services.OrderService
             }
             order.UserId = user.Id;
             order.TotalPrice = cart.TotalPrice;
+            if(order.Date!.Count < 2)
+            {
+                response.Success = false;
+                response.Message = "The date field must consists of two entries: first one is a time, and the second one date";
+                return response;
+            }
             _context.Orders.Add(order);
             _context.SaveChanges();
             /*List<OrderItem> orderItems = new List<OrderItem>();*/

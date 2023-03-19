@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebApi.Data;
@@ -12,9 +13,11 @@ using WebApi.Data;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230319144438_sizes")]
+    partial class sizes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -95,6 +98,10 @@ namespace WebApi.Migrations
                     b.Property<List<string>>("Sizes")
                         .HasColumnType("text[]");
 
+                    b.Property<string>("TypeId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Video")
                         .IsRequired()
                         .HasColumnType("text");
@@ -153,16 +160,15 @@ namespace WebApi.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("City")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Contact")
                         .HasColumnType("text");
-
-                    b.Property<List<string>>("Date")
-                        .HasColumnType("text[]");
 
                     b.Property<string>("FIO")
                         .IsRequired()
@@ -182,6 +188,7 @@ namespace WebApi.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("ZipCode")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -218,6 +225,34 @@ namespace WebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("WebApi.Models.Type", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("Price")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Types");
                 });
 
             modelBuilder.Entity("WebApi.Models.User", b =>
