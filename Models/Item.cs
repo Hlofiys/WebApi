@@ -8,6 +8,6 @@ namespace WebApi.Models
         public int? Price {get; set;} = null;
         public List<string>? Icon {get; set;} = null;
         public string Video {get; set;} = string.Empty;
-        public List<string>? Sizes { get; set;} = null;
+        public Dictionary<string, string>? Sizes { get; set;} = null;
     }
 }

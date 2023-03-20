@@ -21,6 +21,7 @@ namespace WebApi.Migrations
                 .HasAnnotation("ProductVersion", "7.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "hstore");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("WebApi.Models.Cart", b =>
@@ -92,8 +93,8 @@ namespace WebApi.Migrations
                     b.Property<int?>("Price")
                         .HasColumnType("integer");
 
-                    b.Property<List<string>>("Sizes")
-                        .HasColumnType("text[]");
+                    b.Property<Dictionary<string, string>>("Sizes")
+                        .HasColumnType("hstore");
 
                     b.Property<string>("Video")
                         .IsRequired()
@@ -161,8 +162,8 @@ namespace WebApi.Migrations
                     b.Property<string>("Contact")
                         .HasColumnType("text");
 
-                    b.Property<List<string>>("Date")
-                        .HasColumnType("text[]");
+                    b.Property<Dictionary<string, string>>("Date")
+                        .HasColumnType("hstore");
 
                     b.Property<string>("FIO")
                         .IsRequired()
@@ -287,8 +288,8 @@ namespace WebApi.Migrations
                     b.Property<int?>("Price")
                         .HasColumnType("integer");
 
-                    b.Property<List<string>>("Sizes")
-                        .HasColumnType("text[]");
+                    b.Property<Dictionary<string, string>>("Sizes")
+                        .HasColumnType("hstore");
 
                     b.Property<int>("VariantId")
                         .HasColumnType("integer");

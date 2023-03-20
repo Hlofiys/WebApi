@@ -9,6 +9,6 @@
         public string? Contact { get; set; } = null;
         public string? ZipCode { get; set; } = null;
         public string? City { get; set; } = null;
-        public List<string>? Date { get; set; } = null;
+        public Dictionary<string, string>? Date { get; set; } = null;
     }
 }

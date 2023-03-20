@@ -8,11 +8,14 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace WebApi.Migrations
 {
     /// <inheritdoc />
-    public partial class _1 : Migration
+    public partial class dictionaries : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:PostgresExtension:hstore", ",,");
+
             migrationBuilder.CreateTable(
                 name: "CartItems",
                 columns: table => new
@@ -21,7 +24,9 @@ namespace WebApi.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ItemId = table.Column<int>(type: "integer", nullable: true),
                     Variants = table.Column<int[]>(type: "integer[]", nullable: true),
+                    Kit = table.Column<int>(type: "integer", nullable: true),
                     Amount = table.Column<int>(type: "integer", nullable: false),
+                    Price = table.Column<int>(type: "integer", nullable: false),
                     CartId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
@@ -35,7 +40,7 @@ namespace WebApi.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TotalPrice = table.Column<int>(type: "integer", nullable: true)
+                    TotalPrice = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -53,7 +58,7 @@ namespace WebApi.Migrations
                     Price = table.Column<int>(type: "integer", nullable: true),
                     Icon = table.Column<List<string>>(type: "text[]", nullable: true),
                     Video = table.Column<string>(type: "text", nullable: false),
-                    TypeId = table.Column<string>(type: "text", nullable: false)
+                    Sizes = table.Column<Dictionary<string, string>>(type: "hstore", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -66,6 +71,7 @@ namespace WebApi.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    KitId = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     Variants = table.Column<List<int>>(type: "integer[]", nullable: true),
@@ -80,19 +86,43 @@ namespace WebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Types",
+                name: "OrderItems",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
-                    Price = table.Column<int>(type: "integer", nullable: true),
-                    Icon = table.Column<string>(type: "text", nullable: false)
+                    ItemId = table.Column<int>(type: "integer", nullable: true),
+                    Variants = table.Column<int[]>(type: "integer[]", nullable: true),
+                    Kit = table.Column<int>(type: "integer", nullable: true),
+                    Amount = table.Column<int>(type: "integer", nullable: false),
+                    Price = table.Column<int>(type: "integer", nullable: false),
+                    OrderId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Types", x => x.Id);
+                    table.PrimaryKey("PK_OrderItems", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: true),
+                    Shipping = table.Column<bool>(type: "boolean", nullable: true),
+                    Address = table.Column<string>(type: "text", nullable: true),
+                    FIO = table.Column<string>(type: "text", nullable: false),
+                    PhoneNubmer = table.Column<string>(type: "text", nullable: false),
+                    ZipCode = table.Column<string>(type: "text", nullable: true),
+                    City = table.Column<string>(type: "text", nullable: true),
+                    Contact = table.Column<string>(type: "text", nullable: true),
+                    Date = table.Column<Dictionary<string, string>>(type: "hstore", nullable: true),
+                    TotalPrice = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -106,7 +136,9 @@ namespace WebApi.Migrations
                     PasswordSalt = table.Column<byte[]>(type: "bytea", nullable: false),
                     RefreshToken = table.Column<string>(type: "text", nullable: false),
                     RefreshTokenExpires = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    CartId = table.Column<int>(type: "integer", nullable: true)
+                    CartId = table.Column<int>(type: "integer", nullable: true),
+                    ActivationId = table.Column<string>(type: "text", nullable: false),
+                    IsActivated = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -119,12 +151,14 @@ namespace WebApi.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    VariantId = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     Price = table.Column<int>(type: "integer", nullable: true),
                     Icon = table.Column<List<string>>(type: "text[]", nullable: true),
                     ItemId = table.Column<int>(type: "integer", nullable: true),
-                    Video = table.Column<string>(type: "text", nullable: false)
+                    Video = table.Column<string>(type: "text", nullable: false),
+                    Sizes = table.Column<Dictionary<string, string>>(type: "hstore", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -148,7 +182,10 @@ namespace WebApi.Migrations
                 name: "Kits");
 
             migrationBuilder.DropTable(
-                name: "Types");
+                name: "OrderItems");
+
+            migrationBuilder.DropTable(
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "Users");
