@@ -25,7 +25,14 @@ namespace WebApi
                     Price = 10,
                     Icon = images,
                     Video = "https://api.native-flora.tk/media/get/podstavki?name=1_video.mp4",
-                    Sizes = new Dictionary<string, string> { { "Материал","гипсобетон" }, { "Длина","18 см" }, { "Ширина", "9,5 см" } }
+                    Sizes = new Dictionary<string, string?> { 
+                        { "Material","гипс" },
+                        { "Weigth", null },
+                        { "Height",null },
+                        { "Depth",null },
+                        { "Width", "9,5 см" },
+                        { "Diameter",null },
+                        { "Length","18 см" },  }
                 };
                 Variant variant1 = new Variant
                 {
@@ -80,12 +87,15 @@ namespace WebApi
                     Price = 55,
                     Icon = images1,
                     Video = "https://api.native-flora.tk/media/get/lilu?name=1_video.mp4",
-                    Sizes = new Dictionary<string, string> { 
-                        { "Материал","гипс" },
-                        { "Вес", "2,1 кг" },
-                        { "Высота","21 см" },
-                        { "Глубина (отверстия)","7 см" },
-                        { "Диаметр","8 см" } }
+                    Sizes = new Dictionary<string, string?> {
+                        { "Material","гипс" },
+                        { "Weigth", "2,1 кг" },
+                        { "Height","21 см" },
+                        { "Depth","7 см" },
+                        { "Diameter","8 см" },
+                        { "Width", null },
+                        { "Length",null },
+                }
                 };
                 Variant variant1 = new Variant
                 {
@@ -181,7 +191,15 @@ namespace WebApi
                     Name = "Берни",
                     Description = "Органайзер «Берни» выполнен из высокопрочного гипса. Дизайнерский, оригинальный подарок на любой праздник или мероприятие. Можно использовать как ключницу, органайзер под различную мелочь, конфетницу или просто как интерьерное украшение. Изготовлено вручную. Каждое изделие упаковывается в отдельную коробку. Не наливайте воду в изделие! Цвет и дизайн возможен любой.",
                     Price = 45,
-                    Sizes = new Dictionary<string, string> { { "Материал","гипс" },{ "Вес", "1,1 кг" },{ "Высота","14 см" },{ "Глубина","12 см" },{ "Ширина","20 см" } }
+                    Sizes = new Dictionary<string, string?> { 
+                        { "Material","гипс" },
+                        { "Weigth", "1,1 кг" },
+                        { "Height","14 см" },
+                        { "Depth","12 см" },
+                        { "Width", "20 см" },
+                        { "Diameter",null },
+                        { "Length",null }, 
+                    }
                 };
                 Variant variant1 = new Variant
                 {
