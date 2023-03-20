@@ -135,7 +135,7 @@ namespace WebApi.Services.OrderService
                     Id = order.Id,
                     ZipCode= order.ZipCode,
                     City= order.City,
-                    Date = order.Date
+                    FullDate = order.FullDate
                 };
                 OrderAllDtos.Add(cartAll);
             }
@@ -188,10 +188,10 @@ namespace WebApi.Services.OrderService
             }
             order.UserId = user.Id;
             order.TotalPrice = cart.TotalPrice;
-            if(order.Date!.Count < 2)
+            if (order.FullDate!.Count < 2 || !order.FullDate!.ContainsKey("Time") || !order.FullDate!.ContainsKey("Date") || order.FullDate!.Count > 2)
             {
                 response.Success = false;
-                response.Message = "The date field must consists of two entries: first one is a time, and the second one date";
+                response.Message = "The date field must consists of two entries: first one is a Time, and the second one Date";
                 return response;
             }
             _context.Orders.Add(order);

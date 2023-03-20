@@ -12,7 +12,7 @@ namespace WebApi.Dtos.Order
         public string? Contact { get; set; } = string.Empty;
         public string? ZipCode { get; set; } = null;
         public string? City { get; set; } = string.Empty;
-        public Dictionary<string, string>? Date { get; set; } = null;
+        public Dictionary<string, string>? FullDate { get; set; } = null;
         public List<CartItemDto>? CartItems { get; set; } = null;
         public int TotalPrice { get; set; } = 0;
     }
