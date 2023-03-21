@@ -18,7 +18,7 @@ namespace WebApi.Services.TokenService
                 var ticks = long.Parse(tokenTicks);
                 var tokenDate = DateTimeOffset.FromUnixTimeSeconds(ticks).UtcDateTime;
 
-                var now = DateTime.UnixEpoch.Ticks;
+                var now = DateTimeOffset.Now.ToUnixTimeSeconds();
                 var valid = ticks >= now;
                 Console.WriteLine(now);
                 Console.WriteLine(ticks);
