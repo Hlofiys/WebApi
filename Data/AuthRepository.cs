@@ -228,10 +228,12 @@ namespace WebApi.Data
             else
             {
                 response.Success = false;
+				response.Message = "Token is null";
                 return response;
             }
             if(jwttoken is null){
                 response.Success = false;
+				response.Message = "Token is expired";
                 response.StatusCode = 401;
                 return response;
             }
@@ -253,11 +255,13 @@ namespace WebApi.Data
             else
             {
                 response.Success = false;
+				response.Message = "token is null";
                 return response;
             }
             if(jwttoken is null){
                 response.Success = false;
                 response.StatusCode = 401;
+				response.Message = "token is expired";
                 return response;
             }
             var userId = jwttoken.Claims.First(x => x.Type == "nameid").Value;

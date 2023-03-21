@@ -86,7 +86,7 @@ namespace WebApi.Controllers
             if(response.StatusCode == 403) return Unauthorized(MapperResponse);
             if(!response.Success)
             {
-                return Unauthorized(MapperResponse);
+                return NotFound(MapperResponse);
             }
             return Ok(MapperResponse);
         }
