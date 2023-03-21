@@ -20,6 +20,8 @@ namespace WebApi.Services.TokenService
 
                 var now = DateTime.UnixEpoch.Ticks;
                 var valid = ticks >= now;
+                Console.WriteLine(now);
+                Console.WriteLine(ticks);
                 if (!valid) throw new SecurityTokenExpiredException("Token expired");
                 return jwttoken;
             }
