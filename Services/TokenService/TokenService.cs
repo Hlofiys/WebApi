@@ -19,8 +19,6 @@ namespace WebApi.Services.TokenService
                 var tokenDate = DateTimeOffset.FromUnixTimeSeconds(ticks).UtcDateTime;
 
                 var now = DateTime.UtcNow.Ticks;
-                Console.WriteLine(now);
-                Console.WriteLine(tokenDate);
                 var valid = ticks >= now;
                 if (!valid) throw new SecurityTokenExpiredException("Token expired");
                 return jwttoken;
