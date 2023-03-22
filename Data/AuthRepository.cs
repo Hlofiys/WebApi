@@ -201,8 +201,6 @@ namespace WebApi.Data
                 SameSite = SameSiteMode.None,
                 Secure = true,
                 Expires = DateTime.Now.AddDays(30),
-                Path = "/",
-                Domain = httpRequest.Host.Value,
             };
             response.Cookies.Append("refreshToken", newRefreshToken, cookieOptions);
             response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, x-access-token");
