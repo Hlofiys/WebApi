@@ -23,10 +23,10 @@ namespace WebApi.Controllers
             return Ok(MapperResponse);
         }
         [HttpGet("GetById")]
-        public async Task<ActionResult<ServiceResponse<Item>>> GetById(int id)
+        public async Task<ActionResult<ServiceResponse<ItemById>>> GetById(int id)
         {
             var response = await _itemService.GetById(id);
-            var MapperResponse = _mapper.Map<ServiceResponseDto<Item>>(response);
+            var MapperResponse = _mapper.Map<ServiceResponseDto<ItemById>>(response);
             if (response.Data == null && response.Success == false) return NotFound(MapperResponse);
             return Ok(MapperResponse);
         }

@@ -86,5 +86,18 @@ namespace WebApi.Controllers
             }
             return Ok(response);
         }
+        [HttpPost("PriceGet")]
+        public async Task<ActionResult<ServiceResponse<int>>> PriceGet(CartAddDto request)
+        {
+            var Id = request.Id;
+            var Amount = request.Amount;
+            var Variants = request.Variants;
+            var response = await _cartService.PriceGet((int)Id!, (int)Amount!, Variants!);
+            if (response.Success == false)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
     }
 }

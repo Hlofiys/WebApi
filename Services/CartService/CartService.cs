@@ -574,6 +574,102 @@ namespace WebApi.Services.CartService
 
         }
 
+        public async Task<ServiceResponse<int>> PriceGet(int itemId, int itemAmount, int[] Variants)
+        {
+            var response = new ServiceResponse<int>();
+            var item = _context.Items.ToList().Find(u => u.Id == itemId);
+
+            if (item is null)
+            {
+                response.Success = false;
+                return response;
+            }
+            bool VariantExists;
+            int TotalVariantsPrice = 0;
+            int TotalPrice = 0;
+            Kit? Kit = null;
+            List<Variant> FoundVariants = new();
+            if (Variants is not null)
+            {
+                List<Kit> kits = _context.Kits.ToList().FindAll(k => k.ItemId == itemId);
+                bool isArrayEqual = true;
+                foreach (var kit in kits)
+                {
+
+                    if (kit?.Variants?.ToArray().Length == Variants.Length)
+                    {
+                        if (!Variants.SequenceEqual(kit.Variants.ToArray()))
+                        {
+                            isArrayEqual = false;
+                        }
+                        else
+                        {
+                            FoundVariants?.Add(_mapper.Map<Variant>(kit));
+                            Kit = kit;
+                        }
+                    }
+                    else
+                    {
+                        isArrayEqual = false;
+                    }
+                }
+                if (FoundVariants.Count == 0)
+                {
+                    Kit = null;
+                    foreach (var variant in Variants)
+                    {
+                        if (variant > 0)
+                        {
+                            var FoundVariant = _context.Variants.ToList().Find(v => v.VariantId == variant && v.ItemId == item.Id)!;
+                            if(FoundVariant is null)
+                            {
+                                response.Success = false;
+                                response.Message = "This variant does not exist";
+                                return response;
+                            }
+                            FoundVariants?.Add(FoundVariant);
+                            if (!FoundVariants!.Any())
+                            {
+                                response.Success = false;
+                                response.Message = "This variant does not exist";
+                                return response;
+                            }
+                        }
+                        else
+                        {
+                            response.Success = false;
+                            response.Message = "This variant does not exist";
+                            return response;
+                        }
+                    }
+                }
+
+                foreach (var variant in FoundVariants!)
+                {
+                    TotalVariantsPrice += (int)variant.Price!;
+                }
+                VariantExists = true;
+            }
+            else
+            {
+                VariantExists = false;
+            }
+            int ItemPrice = 0;
+                if (!VariantExists)
+                {
+                    ItemPrice = (int)(item.Price * itemAmount)!;
+                    TotalPrice = (int)(item.Price * itemAmount)!;
+                }
+                else
+                {
+                ItemPrice = TotalVariantsPrice * itemAmount;
+                TotalPrice = TotalVariantsPrice * itemAmount;
+                }
+
+            response.Data = TotalPrice;
+            return response;
+        }
+
         public async Task<ServiceResponse<CartAllDto>> Update(int Id, int[]? Variants, int? Amount, HttpRequest request)
         {
             var response = new ServiceResponse<CartAllDto>();

@@ -6,6 +6,7 @@ global using WebApi.Services.CartService;
 global using WebApi.Services.ItemService;
 global using WebApi.Services.TokenService;
 global using WebApi.Dtos.Order;
+global using WebApi.Dtos.Item;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Filters;
