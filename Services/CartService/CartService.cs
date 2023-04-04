@@ -75,25 +75,14 @@ namespace WebApi.Services.CartService
             if (Variants is not null)
             {
                 List<Kit> kits = _context.Kits.ToList().FindAll(k => k.ItemId == itemId);
-                bool isArrayEqual = true;
                 foreach (var kit in kits)
                 {
 
-                    if (kit?.Variants?.ToArray().Length == Variants.Length)
+                    if (kit?.Variants?.ToArray().Length == Variants.Length && 
+                        Variants.SequenceEqual(kit.Variants.ToArray()))
                     {
-                        if (!Variants.SequenceEqual(kit.Variants.ToArray()))
-                        {
-                            isArrayEqual = false;
-                        }
-                        else
-                        {
-                            FoundVariants?.Add(_mapper.Map<Variant>(kit));
-                            Kit = kit;
-                        }
-                    }
-                    else
-                    {
-                        isArrayEqual = false;
+                        FoundVariants?.Add(_mapper.Map<Variant>(kit));
+                        Kit = kit;   
                     }
                 }
                 if (FoundVariants.Count == 0)
@@ -592,25 +581,13 @@ namespace WebApi.Services.CartService
             if (Variants is not null)
             {
                 List<Kit> kits = _context.Kits.ToList().FindAll(k => k.ItemId == itemId);
-                bool isArrayEqual = true;
                 foreach (var kit in kits)
                 {
 
-                    if (kit?.Variants?.ToArray().Length == Variants.Length)
+                    if (kit?.Variants?.ToArray().Length == Variants.Length && Variants.SequenceEqual(kit.Variants.ToArray()))
                     {
-                        if (!Variants.SequenceEqual(kit.Variants.ToArray()))
-                        {
-                            isArrayEqual = false;
-                        }
-                        else
-                        {
-                            FoundVariants?.Add(_mapper.Map<Variant>(kit));
-                            Kit = kit;
-                        }
-                    }
-                    else
-                    {
-                        isArrayEqual = false;
+                        FoundVariants?.Add(_mapper.Map<Variant>(kit));
+                        Kit = kit;
                     }
                 }
                 if (FoundVariants.Count == 0)
@@ -707,10 +684,10 @@ namespace WebApi.Services.CartService
                 response.Message = "The user does not have a product with this id";
                 return response;
             }
-            // Если варианты в запросе указаны
+            // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             if (Variants is not null)
             {
-                //Ищем в вариантах товара в корзине указанные варианты и при нахождении возвращаем ошибку
+                //пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
                 if (CartItem?.Variants is not null && CartItem?.Variants!.Length > 0)
                 {
                     foreach (var variant in Variants)
@@ -736,7 +713,7 @@ namespace WebApi.Services.CartService
                         }
                     }
                 }
-                // Проверяем указано ли новое кол-во товара, и если да - обновляем цену корзины
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                 if (Amount is not null)
                 {
                     cart.TotalPrice -= (int)CartItem?.Price!;
@@ -746,7 +723,7 @@ namespace WebApi.Services.CartService
                     CartItem.Amount = (int)Amount!;
                     cart.TotalPrice += (int)CartItem?.Price!;
                 }
-                // Ищем указанные варианты товара и заносим в коллекцию
+                // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                 List<Variant> NewVariants = new();
                 foreach (var variant in Variants)
                 {
