@@ -17,5 +17,6 @@ namespace WebApi.Data
         Task<ServiceResponse<string>> Refresh(HttpRequest request, HttpResponse response);
         Task<ServiceResponse<string>> Activate(string id, HttpResponse response, HttpRequest httpRequest);
         Task<ServiceResponse<string>> DeleteAll();
+        Task<ServiceResponse<bool>> IsAdmin(string Token);
     }
 }

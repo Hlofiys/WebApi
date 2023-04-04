@@ -32,7 +32,7 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = """Авторизация тут для теста. Пример ввода: "{token}" """,
+        Description = "Авторизация тут для теста. Пример ввода: {token}",
         In = ParameterLocation.Header,
         Name = "x-access-token",
         Type = SecuritySchemeType.ApiKey

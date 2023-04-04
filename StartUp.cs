@@ -21,7 +21,7 @@ namespace WebApi
                 {
                     Id = index,
                     Name = "Подставка",
-                    Description = "Подставка – органайзер выполнена из гипсобетона, он прочнее и тяжелее гипса. Покрыта лаком. Изделие не боится влажной уборки, но использовать подставку декоративную под водой мы не рекомендуем, достаточно протереть влажной тряпочкой, салфеткой. На изделии могут быть воздушные пузырьки, это не является браком, а наоборот придает изюминку. Может быть исполнена в разных техниках и цветах. Упаковывается в бумажный пакет. Изготовлено вручную.",
+                    Description = new List<string> {"Подставка – органайзер выполнена из гипсобетона, он прочнее и тяжелее гипса. Покрыта лаком. Изделие не боится влажной уборки, но использовать подставку декоративную под водой мы не рекомендуем, достаточно протереть влажной тряпочкой, салфеткой. На изделии могут быть воздушные пузырьки, это не является браком, а наоборот придает изюминку.","Может быть исполнена в разных техниках и цветах. Упаковывается в бумажный пакет.","Изготовлено вручную."},
                     Price = 10,
                     Icon = images,
                     Video = "https://api.native-flora.tk/media/get/podstavki?name=1_video.mp4",
@@ -38,7 +38,7 @@ namespace WebApi
                 {
                     VariantId = 1,
                     Name = "Подсвечник",
-                    Description = "",
+                    Description = new List<string>(),
                     Price = 15,
                     Icon = images1,
                     Video = "",
@@ -48,7 +48,7 @@ namespace WebApi
                 {
                     VariantId = 2,
                     Name = "Шкатулка",
-                    Description = "Шкатулка выполнена из гипсобетона, экологически безопасна и гипоаллергенна. Покрыта лаком. Ее можно использовать для хранения украшений или как подсвечник, установив в нее чайную свечу. Изготовлено вручную. Цвет и дизайн возможен любой.",
+                    Description = new List<string> {"Шкатулка выполнена из гипсобетона, экологически безопасна и гипоаллергенна. Покрыта лаком. Ее можно использовать для хранения украшений или как подсвечник, установив в нее чайную свечу.","Изготовлено вручную. Цвет и дизайн возможен любой."},
                     Price = 20,
                     Icon = images3,
                     Video = "",
@@ -58,7 +58,7 @@ namespace WebApi
                 {
                     KitId = 1,
                     Name = "Подсвечник + шкатулка",
-                    Description = "",
+                    Description = new List<string> (),
                     Price = 25,
                     Variants =  new List<int>() { 1, 2},
                     Icon = images2,
@@ -83,7 +83,7 @@ namespace WebApi
                 {
                     Id = index,
                     Name = "Лилу",
-                    Description = "Декоративное кашпо «Лилу» из высокопрочного гипса. Покрыто моющейся краской. Изготовлено вручную. Варианты использования: 1. Подставка для кистей и косметики; 2. Кашпо для цветов и сухоцветов; 3. Подставка для столовых приборов; 4. Органайзер для карандашей, ручек; 5. Ваза для конфет. Шарик съемный, находится внутри кашпо, крепится отдельно. Каждое изделие упаковывается в отдельную коробку. Не наливайте воду в изделие, используйте дополнительную емкость! Используйте цветы, не требующие обильного полива. Цвет и дизайн возможен любой.",
+                    Description = new List<string>{"Декоративное кашпо «Лилу» из высокопрочного гипса. Покрыто моющейся краской.","Изготовлено вручную.", "Варианты использования: 1. Подставка для кистей и косметики; 2. Кашпо для цветов и сухоцветов; 3. Подставка для столовых приборов; 4. Органайзер для карандашей, ручек; 5. Ваза для конфет.","Шарик съемный, находится внутри кашпо, крепится отдельно.","Каждое изделие упаковывается в отдельную коробку.","Не наливайте воду в изделие, используйте дополнительную емкость!","Используйте цветы, не требующие обильного полива.","Цвет и дизайн возможен любой."},
                     Price = 55,
                     Icon = images1,
                     Video = "https://api.native-flora.tk/media/get/lilu?name=1_video.mp4",
@@ -101,7 +101,7 @@ namespace WebApi
                 {
                     VariantId = 1,
                     Name = "Стрелки",
-                    Description = "",
+                    Description = new List<string>(),
                     Price = 58,
                     Icon = images2,
                     Video = "",
@@ -111,7 +111,7 @@ namespace WebApi
                 {
                     VariantId = 2,
                     Name = "Шипы",
-                    Description = "",
+                    Description = new List<string>(),
                     Price = 60,
                     Icon = images3,
                     Video = "",
@@ -121,7 +121,7 @@ namespace WebApi
                 {
                     VariantId = 3,
                     Name = "Патчи",
-                    Description = "",
+                    Description = new List<string>(),
                     Price = 60,
                     Icon = images4,
                     Video = "",
@@ -131,7 +131,7 @@ namespace WebApi
                 {
                     KitId = 1,
                     Name = "Стрелки + Шипы",
-                    Description = "",
+                    Description = new List<string>(),
                     Price = 60,
                     Variants = new List<int>() { 1, 2 },
                     Icon = images3,
@@ -142,7 +142,7 @@ namespace WebApi
                 {
                     KitId = 2,
                     Name = "Патчи + Шипы",
-                    Description = "",
+                    Description = new List<string>(),
                     Price = 60,
                     Variants = new List<int>() { 2, 3 },
                     Icon = new List<string> { "https://api.native-flora.tk/media/get/lilu?name=4_third.png", "https://api.native-flora.tk/media/get/lilu?name=3_main.png", "https://api.native-flora.tk/media/get/lilu?name=4_main.png" },
@@ -153,7 +153,7 @@ namespace WebApi
                 {
                     KitId = 3,
                     Name = "Стрелки + Патчи",
-                    Description = "",
+                    Description = new List<string>(),
                     Price = 60,
                     Variants = new List<int>() { 1, 3 },
                     Icon = new List<string> { "https://api.native-flora.tk/media/get/lilu?name=4_third.png", "https://api.native-flora.tk/media/get/lilu?name=4_second.png" },
@@ -164,7 +164,7 @@ namespace WebApi
                 {
                     KitId = 4,
                     Name = "Стрелки + Патчи + шипы",
-                    Description = "",
+                    Description = new List<string>(),
                     Price = 60,
                     Variants = new List<int>() { 1, 2, 3 },
                     Icon = new List<string> { "https://api.native-flora.tk/media/get/lilu?name=4_third.png", "https://api.native-flora.tk/media/get/lilu?name=4_second.png", "https://api.native-flora.tk/media/get/lilu?name=3_third.png" },
@@ -189,7 +189,7 @@ namespace WebApi
                 {
                     Id = index,
                     Name = "Берни",
-                    Description = "Органайзер «Берни» выполнен из высокопрочного гипса. Дизайнерский, оригинальный подарок на любой праздник или мероприятие. Можно использовать как ключницу, органайзер под различную мелочь, конфетницу или просто как интерьерное украшение. Изготовлено вручную. Каждое изделие упаковывается в отдельную коробку. Не наливайте воду в изделие! Цвет и дизайн возможен любой.",
+                    Description = new List<string>{"Органайзер «Берни» выполнен из высокопрочного гипса. Дизайнерский, оригинальный подарок на любой праздник или мероприятие. Можно использовать как ключницу, органайзер под различную мелочь, конфетницу или просто как интерьерное украшение.","Изготовлено вручную. Каждое изделие упаковывается в отдельную коробку.","Не наливайте воду в изделие!","Цвет и дизайн возможен любой."},
                     Price = 45,
                     Sizes = new Dictionary<string, string?> { 
                         { "Material","гипс" },
@@ -205,7 +205,7 @@ namespace WebApi
                 {
                     VariantId = 1,
                     Name = "Шмпы",
-                    Description = "",
+                    Description = new List<string>(),
                     Price = 50,
                     Video = "",
                     ItemId = index,

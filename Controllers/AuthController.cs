@@ -121,5 +121,16 @@ namespace WebApi.Controllers
             }
             return Ok(MapperResponse);
         }
+        [HttpGet("IsAdmin")]
+        public async Task<ActionResult<ServiceResponse<bool>>> IsAdmin()
+        {
+            var response = await _authRepo.IsAdmin(Request.Headers["x-access-token"].ToString());
+            var MapperResponse = _mapper.Map<ServiceResponseDto<bool>>(response);
+            if(response.StatusCode == 401) return Unauthorized(MapperResponse);
+            if (!response.Success) return BadRequest(MapperResponse);
+            return Ok(MapperResponse);
+        }
+
+        
     }
 }

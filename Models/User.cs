@@ -16,6 +16,7 @@ namespace WebApi.Models
         public int? CartId {get; set;} = null;
         public string ActivationId { get; set;} = string.Empty;
         public bool IsActivated { get; set;} = false;
+        public bool IsAdmin {get; set;} = false;
 
     }
 }

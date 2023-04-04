@@ -336,5 +336,35 @@ namespace WebApi.Data
             await _context.SaveChangesAsync();
             return response;
         }
+        public async Task<ServiceResponse<bool>> IsAdmin(string Token)
+        {
+            var response = new ServiceResponse<bool>();
+            var token = Token;
+            JwtSecurityToken? jwttoken;
+            if (token is not null){
+                jwttoken = TokenService.ValidateToken(token, _configuration);
+            }
+            else
+            {
+                response.Success = false;
+				response.Message = "Token is null";
+                return response;
+            }
+            if(jwttoken is null){
+                response.Success = false;
+				response.Message = "Token is expired";
+                response.StatusCode = 401;
+                return response;
+            }
+            var userId = jwttoken.Claims.First(x => x.Type == "nameid").Value;
+            var userIdInt = int.Parse(userId);
+            var user = _context.Users.Find(userIdInt);
+            if(user is null){
+                response.Success = false;
+                return response;
+            }
+            response.Data = user.IsAdmin;
+            return response;
+        }
     }
 }
