@@ -2,6 +2,7 @@
 {
     public class CartItemDto
     {
+        public int CartItemId { get ; set; }
         public Models.Item? Item { get; set; } = null;
         public VariantDto[]? Variants { get; set; } = null;
         public KitDto? Kit { get; set; } = null;

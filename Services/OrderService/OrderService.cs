@@ -104,6 +104,7 @@ namespace WebApi.Services.OrderService
                     }
                     CartItemDto itemDto = new CartItemDto()
                     {
+                        CartItemId = item.CartItemId,
                         Item = FoundItem,
                         Amount = item.Amount,
                         Price = item.Price,
@@ -196,20 +197,13 @@ namespace WebApi.Services.OrderService
             }
             _context.Orders.Add(order);
             _context.SaveChanges();
-            /*List<OrderItem> orderItems = new List<OrderItem>();*/
             foreach (var cartItem in CartItems)
             {
                 OrderItem orderItem = (OrderItem)cartItem;
                 orderItem.OrderId = order.Id;
-                /*orderItems.Add(orderItem);*/
                 _context.OrderItems.Add(orderItem);
                 _context.CartItems.Remove(cartItem);
             }
-            /*if (!orderItems.Any())
-            {
-                response.Success = false;
-                return response;
-            }*/
             _context.Carts.Remove(cart);
             await _context.SaveChangesAsync();
             return response;

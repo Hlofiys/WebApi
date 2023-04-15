@@ -32,6 +32,9 @@ namespace WebApi.Controllers
         public async Task<ActionResult<ServiceResponse<CartAllDto>>> All()
         {
             var response = await _cartService.All(Request);
+            if(response.StatusCode == 401){
+                return Unauthorized(response);
+            }
             if (response.Success == false)
             {
                 return NotFound(response);
@@ -48,6 +51,9 @@ namespace WebApi.Controllers
             }
             var Variants = request.Variants;
             var response = await _cartService.Delete((int)Id!, Variants!, Request);
+            if(response.StatusCode == 400){
+                return BadRequest(response);
+            }
             if (response.Success == false)
             {
                 return NotFound(response);

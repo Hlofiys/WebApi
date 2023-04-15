@@ -9,10 +9,12 @@
         public int Amount { get; set; }
         public int Price { get; set; }
         public int? OrderId { get; set; } = null;
+        public int CartItemId {get; set;}
 
         public static explicit operator OrderItem(CartItem v)
         {
-            return new OrderItem { Amount = v.Amount, Price = v.Price, Variants = v.Variants, Kit = v.Kit, ItemId = v.ItemId };
+            Console.WriteLine(v.Id);
+            return new OrderItem { CartItemId = v.Id, Amount = v.Amount, Price = v.Price, Variants = v.Variants, Kit = v.Kit, ItemId = v.ItemId };
         }
     }
 }
