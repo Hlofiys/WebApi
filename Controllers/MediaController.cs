@@ -31,7 +31,7 @@ namespace WebApi.Controllers
             else if (OperatingSystem.IsLinux())
             {
                 string FilePath = $"images/{CategoryName}/{FileName}";
-                FilePath = Path.Combine("/home/hlofiys/dotnet/WebApi/bin/Debug/net7.0/", FilePath);
+                FilePath = Path.Combine("/home/ubuntu/Projects/WebApi/bin/Debug/net7.0/", FilePath);
                 if (System.IO.File.Exists(FilePath))
                     return PhysicalFile(FilePath, "image/png");
                 else

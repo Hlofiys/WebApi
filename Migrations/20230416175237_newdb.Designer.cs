@@ -13,8 +13,8 @@ using WebApi.Data;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230404192229_DescriptionTOList")]
-    partial class DescriptionTOList
+    [Migration("20230416175237_newdb")]
+    partial class newdb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -202,6 +202,9 @@ namespace WebApi.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Amount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CartItemId")
                         .HasColumnType("integer");
 
                     b.Property<int?>("ItemId")
