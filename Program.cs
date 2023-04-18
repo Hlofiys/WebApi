@@ -3,10 +3,13 @@ global using Microsoft.EntityFrameworkCore;
 global using WebApi.Data;
 global using AutoMapper;
 global using WebApi.Services.CartService;
-global using WebApi.Services.ItemService;
-global using WebApi.Services.TokenService;
-global using WebApi.Dtos.Order;
+global using WebApi.Services;
+global using WebApi.Dtos.Cart;
 global using WebApi.Dtos.Item;
+global using WebApi.Dtos.Variant;
+global using WebApi.Dtos.User;
+global using WebApi.Dtos.Kit;
+global using WebApi.Dtos.Order;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Filters;
@@ -15,7 +18,6 @@ using WebApi;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using WebApi.Services;
 using WebApi.Services.EmailService;
 using WebApi.Services.OrderService;
 
@@ -64,6 +66,8 @@ builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IVariantService, VariantService>();
+builder.Services.AddScoped<IKitService, KitService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {

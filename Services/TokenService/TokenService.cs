@@ -1,10 +1,18 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace WebApi.Services.TokenService
+namespace WebApi.Services
 {
-    public static class TokenService
+    public class TokenService
     {
+        private readonly DataContext _context;
+        private readonly IConfiguration _configuration;
+        public TokenService(DataContext context, IConfiguration configuration)
+        {
+            _configuration = configuration;
+            _context = context;
+
+        }
 
         public static JwtSecurityToken? ValidateToken(string token, IConfiguration _configuration)
         {
@@ -40,6 +48,36 @@ namespace WebApi.Services.TokenService
                     IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(appSettingsToken))
                 };
             }
+        }
+        public ServiceResponse<User>? UserSearch(string token)
+        {
+            var response = new ServiceResponse<User>();
+            JwtSecurityToken? jwttoken;
+            if (token is not null)
+            {
+                jwttoken = TokenService.ValidateToken(token, _configuration);
+            }
+            else
+            {
+                response.Success = false;
+                return response;
+            }
+            if (jwttoken is null)
+            {
+                response.Success = false;
+                response.StatusCode = 401;
+                return response;
+            }
+            var userIdString = jwttoken.Claims.First(x => x.Type == "nameid").Value;
+            int userId = int.Parse(userIdString);
+            var user = _context.Users.ToList().Find(u => u.Id == userId);
+            if (user is null)
+            {
+                response.Success = false;
+                return response;
+            }
+            response.Data = user;
+            return response;
         }
     }
 }

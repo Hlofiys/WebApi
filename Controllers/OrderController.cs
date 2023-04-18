@@ -20,7 +20,7 @@ namespace WebApi.Controllers
             _mapper = mapper;
         }
         [HttpPost("Create")]
-        public async Task<ActionResult<ServiceResponse<string>>> Register(OrderCreateDto request)
+        public async Task<ActionResult<ServiceResponse<string>>> Create(OrderCreateDto request)
         {
             ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
             bool Shipping = false;

@@ -11,18 +11,20 @@ namespace WebApi.Services.CartService
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
+        private readonly TokenService _tokenService;
         public CartService(DataContext context, IConfiguration configuration, IMapper mapper)
         {
             _configuration = configuration;
             _context = context;
             _mapper = mapper;
+            _tokenService = new TokenService(_context, _configuration);
 
         }
         public async Task<ServiceResponse<string>> Add(int itemId, int itemAmount, int[] Variants, HttpRequest request)
         {
             var response = new ServiceResponse<string>();
             var token = request.Headers["x-access-token"].ToString();
-            var UserSearchResult = UserSearch(token);
+            var UserSearchResult = _tokenService.UserSearch(token);
             if(UserSearchResult!.StatusCode == 401)
             {
                 response.StatusCode = 401;
@@ -232,7 +234,7 @@ namespace WebApi.Services.CartService
         {
             var response = new ServiceResponse<CartAllDto>();
             var token = request.Headers["x-access-token"].ToString();
-            var UserSearchResult = UserSearch(token);
+            var UserSearchResult = _tokenService.UserSearch(token);
             if (UserSearchResult!.StatusCode == 401)
             {
                 response.StatusCode = 401;
@@ -348,7 +350,7 @@ namespace WebApi.Services.CartService
         {
             var response = new ServiceResponse<int>();
             var token = request.Headers["x-access-token"].ToString();
-            var UserSearchResult = UserSearch(token);
+            var UserSearchResult = _tokenService.UserSearch(token);
             if (UserSearchResult!.StatusCode == 401)
             {
                 response.StatusCode = 401;
@@ -386,7 +388,7 @@ namespace WebApi.Services.CartService
         {
             var response = new ServiceResponse<string>();
             var token = request.Headers["x-access-token"].ToString();
-            var UserSearchResult = UserSearch(token);
+            var UserSearchResult = _tokenService.UserSearch(token);
             if (UserSearchResult!.StatusCode == 401)
             {
                 response.StatusCode = 401;
@@ -702,7 +704,7 @@ namespace WebApi.Services.CartService
         {
             var response = new ServiceResponse<CartAllDto>();
             var token = request.Headers["x-access-token"].ToString();
-            var UserSearchResult = UserSearch(token);
+            var UserSearchResult = _tokenService.UserSearch(token);
             if (UserSearchResult!.StatusCode == 401)
             {
                 response.StatusCode = 401;
@@ -964,36 +966,6 @@ namespace WebApi.Services.CartService
                 response.Message = "Specify fields for updating";
                 return response;
             }
-        }
-        public ServiceResponse<User>? UserSearch(string token)
-        {
-            var response = new ServiceResponse<User>();
-            JwtSecurityToken? jwttoken;
-            if (token is not null)
-            {
-                jwttoken = TokenService.TokenService.ValidateToken(token, _configuration);
-            }
-            else
-            {
-                response.Success = false;
-                return response;
-            }
-            if (jwttoken is null)
-            {
-                response.Success = false;
-                response.StatusCode = 401;
-                return response;
-            }
-            var userIdString = jwttoken.Claims.First(x => x.Type == "nameid").Value;
-            int userId = int.Parse(userIdString);
-            var user = _context.Users.ToList().Find(u => u.Id == userId);
-            if (user is null)
-            {
-                response.Success = false;
-                return response;
-            }
-            response.Data = user;
-            return response;
         }
     }
 }

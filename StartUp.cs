@@ -24,7 +24,6 @@ namespace WebApi
                     Description = new List<string> {"Подставка – органайзер выполнена из гипсобетона, он прочнее и тяжелее гипса. Покрыта лаком. Изделие не боится влажной уборки, но использовать подставку декоративную под водой мы не рекомендуем, достаточно протереть влажной тряпочкой, салфеткой. На изделии могут быть воздушные пузырьки, это не является браком, а наоборот придает изюминку.","Может быть исполнена в разных техниках и цветах. Упаковывается в бумажный пакет.","Изготовлено вручную."},
                     Price = 10,
                     Icon = images,
-                    Video = "https://api.native-flora.tk/media/get/podstavki?name=1_video.mp4",
                     Sizes = new Dictionary<string, string?> { 
                         { "Material","гипс" },
                         { "Weigth", null },
@@ -41,7 +40,6 @@ namespace WebApi
                     Description = new List<string>(),
                     Price = 15,
                     Icon = images1,
-                    Video = "",
                     ItemId = index,
                 };
                 Variant variant2 = new Variant
@@ -51,7 +49,6 @@ namespace WebApi
                     Description = new List<string> {"Шкатулка выполнена из гипсобетона, экологически безопасна и гипоаллергенна. Покрыта лаком. Ее можно использовать для хранения украшений или как подсвечник, установив в нее чайную свечу.","Изготовлено вручную. Цвет и дизайн возможен любой."},
                     Price = 20,
                     Icon = images3,
-                    Video = "",
                     ItemId = index,
                 };
                 Kit kit = new Kit
@@ -62,7 +59,6 @@ namespace WebApi
                     Price = 25,
                     Variants =  new List<int>() { 1, 2},
                     Icon = images2,
-                    Video = "",
                     ItemId = index,
                 };
                 _context.Items.Add(item);
@@ -86,7 +82,6 @@ namespace WebApi
                     Description = new List<string>{"Декоративное кашпо «Лилу» из высокопрочного гипса. Покрыто моющейся краской.","Изготовлено вручную.", "Варианты использования: 1. Подставка для кистей и косметики; 2. Кашпо для цветов и сухоцветов; 3. Подставка для столовых приборов; 4. Органайзер для карандашей, ручек; 5. Ваза для конфет.","Шарик съемный, находится внутри кашпо, крепится отдельно.","Каждое изделие упаковывается в отдельную коробку.","Не наливайте воду в изделие, используйте дополнительную емкость!","Используйте цветы, не требующие обильного полива.","Цвет и дизайн возможен любой."},
                     Price = 55,
                     Icon = images1,
-                    Video = "https://api.native-flora.tk/media/get/lilu?name=1_video.mp4",
                     Sizes = new Dictionary<string, string?> {
                         { "Material","гипс" },
                         { "Weigth", "2,1 кг" },
@@ -104,7 +99,6 @@ namespace WebApi
                     Description = new List<string>(),
                     Price = 58,
                     Icon = images2,
-                    Video = "",
                     ItemId = index,
                 };
                 Variant variant2 = new Variant
@@ -114,7 +108,6 @@ namespace WebApi
                     Description = new List<string>(),
                     Price = 60,
                     Icon = images3,
-                    Video = "",
                     ItemId = index,
                 };
                 Variant variant3 = new Variant
@@ -124,7 +117,6 @@ namespace WebApi
                     Description = new List<string>(),
                     Price = 60,
                     Icon = images4,
-                    Video = "",
                     ItemId = index,
                 };
                 Kit kit1 = new Kit
@@ -135,7 +127,6 @@ namespace WebApi
                     Price = 60,
                     Variants = new List<int>() { 1, 2 },
                     Icon = images3,
-                    Video = "",
                     ItemId = index,
                 };
                 Kit kit2 = new Kit
@@ -146,7 +137,6 @@ namespace WebApi
                     Price = 60,
                     Variants = new List<int>() { 2, 3 },
                     Icon = new List<string> { "https://api.native-flora.tk/media/get/lilu?name=4_third.png", "https://api.native-flora.tk/media/get/lilu?name=3_main.png", "https://api.native-flora.tk/media/get/lilu?name=4_main.png" },
-                    Video = "",
                     ItemId = index,
                 };
                 Kit kit3 = new Kit
@@ -157,7 +147,7 @@ namespace WebApi
                     Price = 60,
                     Variants = new List<int>() { 1, 3 },
                     Icon = new List<string> { "https://api.native-flora.tk/media/get/lilu?name=4_third.png", "https://api.native-flora.tk/media/get/lilu?name=4_second.png" },
-                    Video = "",
+
                     ItemId = index,
                 };
                 Kit kit4 = new Kit
@@ -168,7 +158,7 @@ namespace WebApi
                     Price = 60,
                     Variants = new List<int>() { 1, 2, 3 },
                     Icon = new List<string> { "https://api.native-flora.tk/media/get/lilu?name=4_third.png", "https://api.native-flora.tk/media/get/lilu?name=4_second.png", "https://api.native-flora.tk/media/get/lilu?name=3_third.png" },
-                    Video = "",
+
                     ItemId = index,
                 };
                 _context.Items.Add(item);
@@ -204,10 +194,9 @@ namespace WebApi
                 Variant variant1 = new Variant
                 {
                     VariantId = 1,
-                    Name = "Шмпы",
+                    Name = "Шипы",
                     Description = new List<string>(),
                     Price = 50,
-                    Video = "",
                     ItemId = index,
                 };
                 _context.Items.Add(item);

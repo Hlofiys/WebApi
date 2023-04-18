@@ -1,18 +1,20 @@
 using WebApi.Dtos.Cart;
 using WebApi.Dtos.Item;
 
-namespace WebApi.Services.ItemService
+namespace WebApi.Services
 {
     public class ItemService : IItemService
     {
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
+        private readonly TokenService _tokenService;
         public ItemService(DataContext context, IConfiguration configuration, IMapper mapper)
         {
             _configuration = configuration;
             _context = context;
             _mapper = mapper;
+            _tokenService = new TokenService(_context, _configuration);
 
         }
         public ServiceResponse<Item[]> GetAll()
@@ -49,6 +51,31 @@ namespace WebApi.Services.ItemService
                 itemById.Kits = kits;
             }
             response.Data = itemById;
+            return response;
+        }
+        public async Task<ServiceResponse<Item>> Add(Item addItem, string token){
+            var response = new ServiceResponse<Item>();
+            var UserSearchResult = _tokenService.UserSearch(token);
+            if (UserSearchResult!.StatusCode == 401)
+            {
+                response.StatusCode = 401;
+                response.Success = false;
+                return response;
+            }
+            if (UserSearchResult!.Success == false)
+            {
+                response.Success = false;
+                return response;
+            }
+            var user = UserSearchResult.Data!;
+            if(!user.IsAdmin){
+                response.Success = false;
+                response.Message = "You are not an admin!";
+                return response;
+            }
+
+            _context.Items.Add(addItem);
+            await _context.SaveChangesAsync();
             return response;
         }
     }

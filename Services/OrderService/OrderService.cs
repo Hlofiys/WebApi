@@ -11,11 +11,13 @@ namespace WebApi.Services.OrderService
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
+        private readonly TokenService _tokenService;
         public OrderService(DataContext context, IConfiguration configuration, IMapper mapper)
         {
             _configuration = configuration;
             _context = context;
             _mapper = mapper;
+            _tokenService = new TokenService(_context, _configuration);
 
         }
 
@@ -23,7 +25,7 @@ namespace WebApi.Services.OrderService
         {
             var response = new ServiceResponse<List<OrderAllDto>>();
             var token = request.Headers["x-access-token"].ToString();
-            var UserSearchResult = UserSearch(token);
+            var UserSearchResult = _tokenService.UserSearch(token);
             if (UserSearchResult!.StatusCode == 401)
             {
                 response.StatusCode = 401;
@@ -154,7 +156,7 @@ namespace WebApi.Services.OrderService
         {
             var response = new ServiceResponse<string>();
             var token = request.Headers["x-access-token"].ToString();
-            var UserSearchResult = UserSearch(token);
+            var UserSearchResult = _tokenService.UserSearch(token);
             if (UserSearchResult!.StatusCode == 401)
             {
                 response.StatusCode = 401;
@@ -206,36 +208,6 @@ namespace WebApi.Services.OrderService
             }
             _context.Carts.Remove(cart);
             await _context.SaveChangesAsync();
-            return response;
-        }
-        public ServiceResponse<User>? UserSearch(string token)
-        {
-            var response = new ServiceResponse<User>();
-            JwtSecurityToken? jwttoken;
-            if (token is not null)
-            {
-                jwttoken = TokenService.TokenService.ValidateToken(token, _configuration);
-            }
-            else
-            {
-                response.Success = false;
-                return response;
-            }
-            if (jwttoken is null)
-            {
-                response.Success = false;
-                response.StatusCode = 401;
-                return response;
-            }
-            var userIdString = jwttoken.Claims.First(x => x.Type == "nameid").Value;
-            int userId = int.Parse(userIdString);
-            var user = _context.Users.ToList().Find(u => u.Id == userId);
-            if (user is null)
-            {
-                response.Success = false;
-                return response;
-            }
-            response.Data = user;
             return response;
         }
     }
