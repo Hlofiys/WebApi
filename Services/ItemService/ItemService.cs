@@ -78,5 +78,44 @@ namespace WebApi.Services
             await _context.SaveChangesAsync();
             return response;
         }
+        public async Task<ServiceResponse<Item>> Update(ItemUpdateDto itemInfo, string token){
+            var response = new ServiceResponse<Item>();
+            var UserSearchResult = _tokenService.UserSearch(token);
+            if (UserSearchResult!.StatusCode == 401)
+            {
+                response.StatusCode = 401;
+                response.Success = false;
+                return response;
+            }
+            if (UserSearchResult!.Success == false)
+            {
+                response.Success = false;
+                return response;
+            }
+            var user = UserSearchResult.Data!;
+            if(!user.IsAdmin){
+                response.Success = false;
+                response.Message = "You are not an admin!";
+                return response;
+            }
+            var item = _context.Items.DefaultIfEmpty().First(i => i.Id == itemInfo.Id);
+            if(item == null){
+                response.Success = false;
+                response.Message = "Item with this id does not exists";
+                return response;
+            }
+            foreach (var value in itemInfo.GetType().GetProperties())
+            {
+                if(value.GetValue(itemInfo) is not null && value.Name != "Id"){
+                    var propety = item.GetType().GetProperty(value.Name) ?? null;
+                    if (propety != null){
+                        propety.SetValue(item, value.GetValue(itemInfo), null);
+                    }
+                }
+            }
+            _context.Items.Update(item);
+            await _context.SaveChangesAsync();
+            return response;
+        }
     }
 }

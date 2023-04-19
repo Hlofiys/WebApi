@@ -55,7 +55,6 @@ namespace WebApi
                 {
                     KitId = 1,
                     Name = "Подсвечник + шкатулка",
-                    Description = new List<string> (),
                     Price = 25,
                     Variants =  new List<int>() { 1, 2},
                     Icon = images2,
@@ -123,7 +122,6 @@ namespace WebApi
                 {
                     KitId = 1,
                     Name = "Стрелки + Шипы",
-                    Description = new List<string>(),
                     Price = 60,
                     Variants = new List<int>() { 1, 2 },
                     Icon = images3,
@@ -133,7 +131,6 @@ namespace WebApi
                 {
                     KitId = 2,
                     Name = "Патчи + Шипы",
-                    Description = new List<string>(),
                     Price = 60,
                     Variants = new List<int>() { 2, 3 },
                     Icon = new List<string> { "https://api.native-flora.tk/media/get/lilu?name=4_third.png", "https://api.native-flora.tk/media/get/lilu?name=3_main.png", "https://api.native-flora.tk/media/get/lilu?name=4_main.png" },
@@ -143,7 +140,6 @@ namespace WebApi
                 {
                     KitId = 3,
                     Name = "Стрелки + Патчи",
-                    Description = new List<string>(),
                     Price = 60,
                     Variants = new List<int>() { 1, 3 },
                     Icon = new List<string> { "https://api.native-flora.tk/media/get/lilu?name=4_third.png", "https://api.native-flora.tk/media/get/lilu?name=4_second.png" },
@@ -154,7 +150,6 @@ namespace WebApi
                 {
                     KitId = 4,
                     Name = "Стрелки + Патчи + шипы",
-                    Description = new List<string>(),
                     Price = 60,
                     Variants = new List<int>() { 1, 2, 3 },
                     Icon = new List<string> { "https://api.native-flora.tk/media/get/lilu?name=4_third.png", "https://api.native-flora.tk/media/get/lilu?name=4_second.png", "https://api.native-flora.tk/media/get/lilu?name=3_third.png" },

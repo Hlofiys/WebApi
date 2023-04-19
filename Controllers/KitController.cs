@@ -17,7 +17,7 @@ namespace WebApi.Controllers
         [HttpPost("Add")]
         public async Task<ActionResult<ServiceResponse<Kit>>> Add(KitAddDto kitInfo)
         {
-            Kit kit = new Kit {Name = kitInfo.Name, Description = kitInfo.Description, Icon = kitInfo.Icon, Price = kitInfo.Price, ItemId = kitInfo.ItemId, Variants = kitInfo.Variants};
+            Kit kit = new Kit {Name = kitInfo.Name, Icon = kitInfo.Icon, Price = kitInfo.Price, ItemId = kitInfo.ItemId, Variants = kitInfo.Variants};
             string token = Request.Headers["x-access-token"].ToString();
             if(token is null) return BadRequest();
             var response = await _kitService.Add(kit, token);

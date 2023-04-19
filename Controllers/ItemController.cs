@@ -43,5 +43,17 @@ namespace WebApi.Controllers
             if(!response.Success) return BadRequest();
             return Ok(response);
         }
+        [HttpPost("Update")]
+        public async Task<ActionResult<ServiceResponse<Item>>> Update(ItemUpdateDto itemInfo){
+            if(itemInfo.Id == null){
+                return BadRequest();
+            }
+            string token = Request.Headers["x-access-token"].ToString();
+            if(token is null) return BadRequest();
+            var response = await _itemService.Update(itemInfo, token);
+            if(response.StatusCode == 401) return Unauthorized(response);
+            if(!response.Success) return BadRequest();
+            return Ok(response);
+        }
     }
 }
