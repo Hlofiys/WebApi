@@ -37,7 +37,7 @@ namespace WebApi.Data
                 response.Success = false;
                 response.Message = "Wrong password.";
             }
-            else if(user.IsActivated is false)
+            else if (user.IsActivated is false)
             {
                 response.Success = false;
                 response.Message = "Account is not activated";
@@ -71,12 +71,12 @@ namespace WebApi.Data
             Guid myuuid = Guid.NewGuid();
             string myuuidAsString = myuuid.ToString();
             user.ActivationId = myuuidAsString;
-            response.Data = 
+            response.Data =
                 await emailService.SendEmailAsync(user.Username, "Подтверждение акаунта", $"Для подтверждения вашего аккаунта Lepota.by <a href=\"https://kirikkostya.github.io/Lepota/#/Activation/?id={myuuidAsString}\">нажмите сюда</a>");
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             return response;
-            
+
         }
 
         public async Task<ServiceResponse<bool>> Delete(string username, string password)
@@ -187,7 +187,7 @@ namespace WebApi.Data
 
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
-            
+
             await SetRefreshToken(tokenHandler.WriteToken(token), response, user, httpRequest);
 
             return tokenHandler.WriteToken(token);
@@ -220,18 +220,20 @@ namespace WebApi.Data
             var response = new ServiceResponse<string>();
             var token = request.Headers["x-access-token"].ToString();
             JwtSecurityToken? jwttoken;
-            if (token is not null){
+            if (token is not null)
+            {
                 jwttoken = TokenService.ValidateToken(token, _configuration);
             }
             else
             {
                 response.Success = false;
-				response.Message = "Token is null";
+                response.Message = "Token is null";
                 return response;
             }
-            if(jwttoken is null){
+            if (jwttoken is null)
+            {
                 response.Success = false;
-				response.Message = "Token is expired";
+                response.Message = "Token is expired";
                 response.StatusCode = 401;
                 return response;
             }
@@ -241,46 +243,51 @@ namespace WebApi.Data
 
         }
 
-        
-         public async Task<ServiceResponse<string>> Refresh(HttpRequest request, HttpResponse Httpresponse)
+
+        public async Task<ServiceResponse<string>> Refresh(HttpRequest request, HttpResponse Httpresponse)
         {
             var response = new ServiceResponse<string>();
             var token = request.Cookies["refreshToken"];
             JwtSecurityToken? jwttoken;
-            if (token is not null){
+            if (token is not null)
+            {
                 jwttoken = TokenService.ValidateToken(token, _configuration);
             }
             else
             {
                 response.Success = false;
-				response.Message = "token is null";
+                response.Message = "token is null";
                 return response;
             }
-            if(jwttoken is null){
+            if (jwttoken is null)
+            {
                 response.Success = false;
                 response.StatusCode = 401;
-				response.Message = "token is expired";
+                response.Message = "token is expired";
                 return response;
             }
             var userId = jwttoken.Claims.First(x => x.Type == "nameid").Value;
             var userIdInt = int.Parse(userId);
             var user = _context.Users.Find(userIdInt);
-            if(user is null){
+            if (user is null)
+            {
                 response.Success = false;
                 return response;
             }
-            if(user.RefreshToken == token){
-               await CreateRefreshToken(user, Httpresponse, request);
-               var AccessToken = CreateToken(user);
-               response.Data = AccessToken;
-               return response;
+            if (user.RefreshToken == token)
+            {
+                await CreateRefreshToken(user, Httpresponse, request);
+                var AccessToken = CreateToken(user);
+                response.Data = AccessToken;
+                return response;
             }
-            else{
+            else
+            {
                 response.Success = false;
                 response.StatusCode = 403;
                 return response;
             }
-            
+
 
         }
 
@@ -288,14 +295,14 @@ namespace WebApi.Data
         {
             var response = new ServiceResponse<string>();
             var user = _context.Users.ToList().Find(user => user.ActivationId == id);
-            if(user is null)
+            if (user is null)
             {
                 response.Success = false;
                 response.Message = "User does not exists";
                 response.StatusCode = 2;
                 return response;
             }
-            if(user.IsActivated == true)
+            if (user.IsActivated == true)
             {
                 response.Success = false;
                 response.Message = "User alredy activated";
@@ -341,25 +348,28 @@ namespace WebApi.Data
             var response = new ServiceResponse<bool>();
             var token = Token;
             JwtSecurityToken? jwttoken;
-            if (token is not null){
+            if (token is not null)
+            {
                 jwttoken = TokenService.ValidateToken(token, _configuration);
             }
             else
             {
                 response.Success = false;
-				response.Message = "Token is null";
+                response.Message = "Token is null";
                 return response;
             }
-            if(jwttoken is null){
+            if (jwttoken is null)
+            {
                 response.Success = false;
-				response.Message = "Token is expired";
+                response.Message = "Token is expired";
                 response.StatusCode = 401;
                 return response;
             }
             var userId = jwttoken.Claims.First(x => x.Type == "nameid").Value;
             var userIdInt = int.Parse(userId);
             var user = _context.Users.Find(userIdInt);
-            if(user is null){
+            if (user is null)
+            {
                 response.Success = false;
                 return response;
             }

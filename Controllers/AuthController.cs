@@ -29,7 +29,7 @@ namespace WebApi.Controllers
                 new User { Username = request.Username }, request.Password, Response
             );
             var MapperResponse = _mapper.Map<ServiceResponseDto<string>>(response);
-            if(!response.Success)
+            if (!response.Success)
             {
                 return BadRequest(MapperResponse);
             }
@@ -41,11 +41,11 @@ namespace WebApi.Controllers
         {
             var response = await _authRepo.Login(request.Username, request.Password, Response, Request);
             var MapperResponse = _mapper.Map<ServiceResponseDto<string>>(response);
-            if(response.StatusCode == 403)
+            if (response.StatusCode == 403)
             {
                 return UnprocessableEntity(MapperResponse);
             }
-            if(!response.Success)
+            if (!response.Success)
             {
                 return BadRequest(MapperResponse);
             }
@@ -57,7 +57,7 @@ namespace WebApi.Controllers
         {
             var response = await _authRepo.Delete(request.Username, request.Password);
             var MapperResponse = _mapper.Map<ServiceResponseDto<String>>(response);
-            if(!response.Success)
+            if (!response.Success)
             {
                 return BadRequest(MapperResponse);
             }
@@ -67,10 +67,10 @@ namespace WebApi.Controllers
         [HttpGet("checkToken")]
         public ActionResult<ServiceResponse<string>> checkToken()
         {
-            var response =   _authRepo.CheckToken(Request);
+            var response = _authRepo.CheckToken(Request);
             var MapperResponse = _mapper.Map<ServiceResponseDto<string>>(response);
-            if(response.StatusCode == 401) return Unauthorized(MapperResponse);
-            if(!response.Success)
+            if (response.StatusCode == 401) return Unauthorized(MapperResponse);
+            if (!response.Success)
             {
                 return BadRequest(MapperResponse);
             }
@@ -80,11 +80,11 @@ namespace WebApi.Controllers
         [HttpGet("Refresh")]
         public async Task<ActionResult<ServiceResponse<string>>> Refresh()
         {
-            var response =  await _authRepo.Refresh(Request, Response);
+            var response = await _authRepo.Refresh(Request, Response);
             var MapperResponse = _mapper.Map<ServiceResponseDto<string>>(response);
-            if(response.StatusCode == 401) return Unauthorized(MapperResponse);
-            if(response.StatusCode == 403) return Unauthorized(MapperResponse);
-            if(!response.Success)
+            if (response.StatusCode == 401) return Unauthorized(MapperResponse);
+            if (response.StatusCode == 403) return Unauthorized(MapperResponse);
+            if (!response.Success)
             {
                 return NotFound(MapperResponse);
             }
@@ -94,7 +94,7 @@ namespace WebApi.Controllers
         [HttpPost("Activate/{id}")]
         public async Task<ActionResult<ServiceResponse<string>>> Activate(string id)
         {
-            if(id == null)
+            if (id == null)
             {
                 return BadRequest();
             }
@@ -104,7 +104,7 @@ namespace WebApi.Controllers
             {
                 return BadRequest(MapperResponse);
             }
-            if(!response.Success && response.StatusCode == 2)
+            if (!response.Success && response.StatusCode == 2)
             {
                 return NotFound(MapperResponse);
             }
@@ -126,11 +126,11 @@ namespace WebApi.Controllers
         {
             var response = await _authRepo.IsAdmin(Request.Headers["x-access-token"].ToString());
             var MapperResponse = _mapper.Map<ServiceResponseDto<bool>>(response);
-            if(response.StatusCode == 401) return Unauthorized(MapperResponse);
+            if (response.StatusCode == 401) return Unauthorized(MapperResponse);
             if (!response.Success) return BadRequest(MapperResponse);
             return Ok(MapperResponse);
         }
 
-        
+
     }
 }

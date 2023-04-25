@@ -16,7 +16,7 @@ namespace WebApi.Controllers
             _mapper = mapper;
         }
         [HttpGet("GetAll")]
-         public ActionResult<ServiceResponse<Item[]>> GetAll()
+        public ActionResult<ServiceResponse<Item[]>> GetAll()
         {
             var response = _itemService.GetAll();
             var MapperResponse = _mapper.Map<ServiceResponseDto<Item[]>>(response);
@@ -33,26 +33,28 @@ namespace WebApi.Controllers
         [HttpPost("Add")]
         public async Task<ActionResult<ServiceResponse<Item>>> Add(ItemAddDto itemInfo)
         {
-            string[] keys = new string[] {"Material", "Weigth", "Height", "Depth", "Diameter", "Width", "Length"};
-            if(itemInfo.Sizes is null || !itemInfo.Sizes.Keys.ToArray().SequenceEqual(keys)) return BadRequest();
-            Item item = new Item {Name = itemInfo.Name, Description = itemInfo.Description, Sizes = itemInfo.Sizes, Icon = itemInfo.Icon, Price = itemInfo.Price};
+            string[] keys = new string[] { "Material", "Weigth", "Height", "Depth", "Diameter", "Width", "Length" };
+            if (itemInfo.Sizes is null || !itemInfo.Sizes.Keys.ToArray().SequenceEqual(keys)) return BadRequest();
+            Item item = new Item { Name = itemInfo.Name, Description = itemInfo.Description, Sizes = itemInfo.Sizes, Icon = itemInfo.Icon, Price = itemInfo.Price };
             string token = Request.Headers["x-access-token"].ToString();
-            if(token is null) return BadRequest();
+            if (token is null) return BadRequest();
             var response = await _itemService.Add(item, token);
-            if(response.StatusCode == 401) return Unauthorized(response);
-            if(!response.Success) return BadRequest();
+            if (response.StatusCode == 401) return Unauthorized(response);
+            if (!response.Success) return BadRequest();
             return Ok(response);
         }
         [HttpPost("Update")]
-        public async Task<ActionResult<ServiceResponse<Item>>> Update(ItemUpdateDto itemInfo){
-            if(itemInfo.Id == null){
+        public async Task<ActionResult<ServiceResponse<Item>>> Update(ItemUpdateDto itemInfo)
+        {
+            if (itemInfo.Id == null)
+            {
                 return BadRequest();
             }
             string token = Request.Headers["x-access-token"].ToString();
-            if(token is null) return BadRequest();
+            if (token is null) return BadRequest();
             var response = await _itemService.Update(itemInfo, token);
-            if(response.StatusCode == 401) return Unauthorized(response);
-            if(!response.Success) return BadRequest();
+            if (response.StatusCode == 401) return Unauthorized(response);
+            if (!response.Success) return BadRequest();
             return Ok(response);
         }
     }

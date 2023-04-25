@@ -131,13 +131,13 @@ namespace WebApi.Services.OrderService
                     CartItems = itemDtos,
                     TotalPrice = order.TotalPrice,
                     FIO = order.FIO,
-                    Address= order.Address,
+                    Address = order.Address,
                     Shipping = order.Shipping,
                     Contact = order.Contact!,
                     PhoneNubmer = order.PhoneNubmer,
                     Id = order.Id,
-                    ZipCode= order.ZipCode,
-                    City= order.City,
+                    ZipCode = order.ZipCode,
+                    City = order.City,
                     FullDate = order.FullDate
                 };
                 OrderAllDtos.Add(cartAll);
@@ -149,7 +149,7 @@ namespace WebApi.Services.OrderService
             }
             response.Data = OrderAllDtos;
             return response;
-            
+
         }
 
         public async Task<ServiceResponse<string>> Create(Order order, HttpRequest request)

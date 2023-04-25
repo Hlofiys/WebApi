@@ -24,14 +24,14 @@ namespace WebApi.Services.EmailService
             };
 
             using var smpt = new SmtpClient();
-            
+
             try
             {
                 smpt.Connect("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
                 smpt.Authenticate(_configuration.GetSection("EmailConfig:Email").Value, _configuration.GetSection("EmailConfig:Password").Value);
                 smpt.Send(email);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return ex.Message;
             }

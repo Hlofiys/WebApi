@@ -16,13 +16,13 @@ namespace WebApi.Controllers
             _mapper = mapper;
         }
         [HttpPost("Add")]
-         public async Task<ActionResult<ServiceResponse<string>>> Add(CartAddDto request)
+        public async Task<ActionResult<ServiceResponse<string>>> Add(CartAddDto request)
         {
             var Id = request.Id;
             var Amount = request.Amount;
             var Variants = request.Variants;
             var response = await _cartService.Add((int)Id!, (int)Amount!, Variants!, Request);
-            if(response.Success == false)
+            if (response.Success == false)
             {
                 return NotFound(response);
             }
@@ -32,7 +32,8 @@ namespace WebApi.Controllers
         public async Task<ActionResult<ServiceResponse<CartAllDto>>> All()
         {
             var response = await _cartService.All(Request);
-            if(response.StatusCode == 401){
+            if (response.StatusCode == 401)
+            {
                 return Unauthorized(response);
             }
             if (response.Success == false)
@@ -45,13 +46,14 @@ namespace WebApi.Controllers
         public async Task<ActionResult<ServiceResponse<string>>> Delete(CartDeleteDto request)
         {
             var Id = request.Id;
-            if(Id == null)
+            if (Id == null)
             {
                 return BadRequest();
             }
             var Variants = request.Variants;
             var response = await _cartService.Delete((int)Id!, Variants!, Request);
-            if(response.StatusCode == 400){
+            if (response.StatusCode == 400)
+            {
                 return BadRequest(response);
             }
             if (response.Success == false)

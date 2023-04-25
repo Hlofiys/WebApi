@@ -17,7 +17,8 @@ namespace WebApi.Services
             _tokenService = new TokenService(_context, _configuration);
 
         }
-        public async Task<ServiceResponse<Variant>> Add(Variant addVariant, string token){
+        public async Task<ServiceResponse<Variant>> Add(Variant addVariant, string token)
+        {
             var response = new ServiceResponse<Variant>();
             var UserSearchResult = _tokenService.UserSearch(token);
             if (UserSearchResult!.StatusCode == 401)
@@ -32,12 +33,14 @@ namespace WebApi.Services
                 return response;
             }
             var user = UserSearchResult.Data!;
-            if(!user.IsAdmin){
+            if (!user.IsAdmin)
+            {
                 response.Success = false;
                 response.Message = "You are not an admin!";
                 return response;
             }
-            if(!_context.Items.Any(i => i.Id == addVariant.ItemId)){
+            if (!_context.Items.Any(i => i.Id == addVariant.ItemId))
+            {
                 response.Success = false;
                 response.Message = "Item does not exists";
                 return response;
@@ -46,6 +49,54 @@ namespace WebApi.Services
             addVariant.VariantId = ++maxId;
             _context.Variants.Add(addVariant);
             await _context.SaveChangesAsync();
+            return response;
+        }
+
+        public async Task<ServiceResponse<Variant>> Update(VariantUpdateDto variantInfo, string token)
+        {
+            var response = new ServiceResponse<Variant>();
+            var UserSearchResult = _tokenService.UserSearch(token);
+            if (UserSearchResult!.StatusCode == 401)
+            {
+                response.StatusCode = 401;
+                response.Success = false;
+                return response;
+            }
+            if (UserSearchResult!.Success == false)
+            {
+                response.Success = false;
+                return response;
+            }
+            var user = UserSearchResult.Data!;
+            if (!user.IsAdmin)
+            {
+                response.Success = false;
+                response.Message = "You are not an admin!";
+                return response;
+            }
+            var variant = _context.Variants.DefaultIfEmpty().First(v => v.ItemId == variantInfo.ItemId && v.VariantId == variantInfo.VariantId);
+            if (variant == null)
+            {
+                response.Success = false;
+                response.Message = "Variant or item with this id does not exists";
+                return response;
+            }
+            foreach (var value in variantInfo.GetType().GetProperties())
+            {
+                if (value.GetValue(variantInfo) is not null && value.Name != "ItemId" && value.Name != "VariantId")
+                {
+                    var property = variant.GetType().GetProperty(value.Name) ?? null;
+                    if (property != null)
+                    {
+                        var propValue = property.GetValue(variant);
+                        property.SetValue(variant, value.GetValue(variantInfo), null);
+
+                    }
+                }
+            }
+            _context.Variants.Update(variant);
+            await _context.SaveChangesAsync();
+            response.Data = variant;
             return response;
         }
     }

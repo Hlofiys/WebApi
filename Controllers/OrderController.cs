@@ -35,7 +35,7 @@ namespace WebApi.Controllers
                 return BadRequest(serviceResponse);
             }
             var response = await _orderService.Create(
-                new Order { FIO = request.FIO, Address = request.Address, Contact = request.Contact, PhoneNubmer = request.PhoneNumber, Shipping = Shipping , ZipCode = request.ZipCode, City = request.City, FullDate = request.FullDate }, Request);
+                new Order { FIO = request.FIO, Address = request.Address, Contact = request.Contact, PhoneNubmer = request.PhoneNumber, Shipping = Shipping, ZipCode = request.ZipCode, City = request.City, FullDate = request.FullDate }, Request);
             var MapperResponse = _mapper.Map<ServiceResponseDto<string>>(response);
             if (!response.Success)
             {
@@ -44,7 +44,8 @@ namespace WebApi.Controllers
             return Ok(MapperResponse);
         }
         [HttpGet("All")]
-        public async Task<ActionResult<ServiceResponse<List<OrderAllDto>>>> All(){
+        public async Task<ActionResult<ServiceResponse<List<OrderAllDto>>>> All()
+        {
             var serviceResponse = await _orderService.All(Request);
             var MapperResponse = _mapper.Map<ServiceResponseDto<List<OrderAllDto>>>(serviceResponse);
             if (!serviceResponse.Success)

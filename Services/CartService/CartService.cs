@@ -25,13 +25,13 @@ namespace WebApi.Services.CartService
             var response = new ServiceResponse<string>();
             var token = request.Headers["x-access-token"].ToString();
             var UserSearchResult = _tokenService.UserSearch(token);
-            if(UserSearchResult!.StatusCode == 401)
+            if (UserSearchResult!.StatusCode == 401)
             {
                 response.StatusCode = 401;
                 response.Success = false;
                 return response;
             }
-            if(UserSearchResult!.Success == false)
+            if (UserSearchResult!.Success == false)
             {
                 response.Success = false;
                 return response;
@@ -65,23 +65,25 @@ namespace WebApi.Services.CartService
                     var CartItems = _context.CartItems.ToList().FindAll(c => c.CartId == cart.Id && c.ItemId == itemId);
                     foreach (var CartItem in CartItems)
                     {
-                        if(CartItem is not null){
-                        if(CartItem.Variants is null && CartItem.Kit is not null && 
-                           (bool)_context.Kits.ToList().Find(k => k.KitId == CartItem.Kit && k.ItemId == item.Id)?.Variants!.SequenceEqual(Variants.ToList())!){
-                        response.Success = false;
-                        response.Message = "This item is already in the cart";
-                        return response;
-                        }
-                        if (CartItem.Variants is not null && CartItem.Variants!.SequenceEqual(Variants))
+                        if (CartItem is not null)
                         {
-                        response.Success = false;
-                        response.Message = "This item is already in the cart";
-                        return response;
+                            if (CartItem.Variants is null && CartItem.Kit is not null &&
+                               (bool)_context.Kits.ToList().Find(k => k.KitId == CartItem.Kit && k.ItemId == item.Id)?.Variants!.SequenceEqual(Variants.ToList())!)
+                            {
+                                response.Success = false;
+                                response.Message = "This item is already in the cart";
+                                return response;
+                            }
+                            if (CartItem.Variants is not null && CartItem.Variants!.SequenceEqual(Variants))
+                            {
+                                response.Success = false;
+                                response.Message = "This item is already in the cart";
+                                return response;
+                            }
                         }
                     }
-                    }
-                    
-                    
+
+
                 }
             }
             bool VariantExists;
@@ -94,11 +96,11 @@ namespace WebApi.Services.CartService
                 foreach (var kit in kits)
                 {
 
-                    if (kit?.Variants?.ToArray().Length == Variants.Length && 
+                    if (kit?.Variants?.ToArray().Length == Variants.Length &&
                         Variants.SequenceEqual(kit.Variants.ToArray()))
                     {
                         FoundVariants?.Add(_mapper.Map<Variant>(kit));
-                        Kit = kit;   
+                        Kit = kit;
                     }
                 }
                 if (FoundVariants.Count == 0)
@@ -109,7 +111,7 @@ namespace WebApi.Services.CartService
                         if (variant > 0)
                         {
                             var FoundVariant = _context.Variants.ToList().Find(v => v.VariantId == variant && v.ItemId == item.Id)!;
-                            if(FoundVariant is null)
+                            if (FoundVariant is null)
                             {
                                 response.Success = false;
                                 response.Message = "This variant does not exist";
@@ -422,7 +424,7 @@ namespace WebApi.Services.CartService
                 return response;
             }
             var Id = CartItem?.ItemId;
-            
+
             if (Variants is not null)
             {
                 if (CartItem?.Variants?.Length > 0)
@@ -445,14 +447,17 @@ namespace WebApi.Services.CartService
                     }
                     if (OriginalVariantsLength != CartItem?.Variants?.Length)
                     {
-                        if (CheckForExists(CartItem!, cart) == true){
-                                return response;
-                            } else {
-                                response.StatusCode = 400;
-                                response.Success = false;
-                                response.Message = "This CartItem already exists";
-                                return response;
-                            }
+                        if (CheckForExists(CartItem!, cart) == true)
+                        {
+                            return response;
+                        }
+                        else
+                        {
+                            response.StatusCode = 400;
+                            response.Success = false;
+                            response.Message = "This CartItem already exists";
+                            return response;
+                        }
                     }
                     else
                     {
@@ -497,13 +502,16 @@ namespace WebApi.Services.CartService
                                 cart.TotalPrice += (int)NewKit.Price! * CartItem.Amount;
                                 CartItem.Kit = NewKit.KitId;
                                 CartItem.Variants = null;
-                                if (CheckForExists(CartItem, cart) == true){
-                                return response;
-                                } else {
-                                response.StatusCode = 400;
-                                response.Message = "This CartItem already exists";
-                                response.Success = false;
-                                return response;
+                                if (CheckForExists(CartItem, cart) == true)
+                                {
+                                    return response;
+                                }
+                                else
+                                {
+                                    response.StatusCode = 400;
+                                    response.Message = "This CartItem already exists";
+                                    response.Success = false;
+                                    return response;
                                 }
 
                             }
@@ -517,15 +525,18 @@ namespace WebApi.Services.CartService
                             cart.TotalPrice += TotalPrice;
                             CartItem.Kit = null;
                             CartItem.Variants = NewVariants.ToArray();
-                            if (CheckForExists(CartItem, cart) == true){
+                            if (CheckForExists(CartItem, cart) == true)
+                            {
                                 return response;
-                            } else {
+                            }
+                            else
+                            {
                                 response.StatusCode = 400;
                                 response.Message = "This CartItem already exists";
                                 response.Success = false;
                                 return response;
                             }
-                                
+
                         }
                         else if (NewVariants.Count == 0)
                         {
@@ -534,9 +545,12 @@ namespace WebApi.Services.CartService
                             CartItem.Price = (int)(_context.Items.ToList().Find(i => i.Id == CartItem?.ItemId)?.Price * CartItem.Amount)!;
                             CartItem.Kit = null;
                             CartItem.Variants = null;
-                            if (CheckForExists(CartItem, cart) == true){
+                            if (CheckForExists(CartItem, cart) == true)
+                            {
                                 return response;
-                            } else {
+                            }
+                            else
+                            {
                                 response.StatusCode = 400;
                                 response.Success = false;
                                 response.Message = "This CartItem already exists";
@@ -592,26 +606,35 @@ namespace WebApi.Services.CartService
                 return response;
             }
 
-            bool CheckForExists(CartItem cartItem, Cart cart){
-              try{
-                    if(cartItem.Variants != null && cartItem.Variants!.Count() > 0){
-                    var search = _context.CartItems.ToList().Find(c =>c.Id != cartItem.Id && c.ItemId == cartItem.ItemId && c.Kit == null && c.Variants != null && cartItem!.Variants!.SequenceEqual(c.Variants))!.Id;
-                    } else if(cartItem.Kit != null) {
-                    var search = _context.CartItems.ToList().Find(c =>c.Id != cartItem.Id && c.ItemId == cartItem.ItemId && c.Kit == cartItem.Kit)!.Id;
-                    } else{
-                    var search = _context.CartItems.ToList().Find(c =>c.Id != cartItem.Id && c.ItemId == cartItem.ItemId && c.Variants == null && c.Kit == null)!.Id;
-                    }   
+            bool CheckForExists(CartItem cartItem, Cart cart)
+            {
+                try
+                {
+                    if (cartItem.Variants != null && cartItem.Variants!.Count() > 0)
+                    {
+                        var search = _context.CartItems.ToList().Find(c => c.Id != cartItem.Id && c.ItemId == cartItem.ItemId && c.Kit == null && c.Variants != null && cartItem!.Variants!.SequenceEqual(c.Variants))!.Id;
                     }
-                    catch{
-                    if(cartItem.Variants != null && cartItem.Variants.Count() == 0){
+                    else if (cartItem.Kit != null)
+                    {
+                        var search = _context.CartItems.ToList().Find(c => c.Id != cartItem.Id && c.ItemId == cartItem.ItemId && c.Kit == cartItem.Kit)!.Id;
+                    }
+                    else
+                    {
+                        var search = _context.CartItems.ToList().Find(c => c.Id != cartItem.Id && c.ItemId == cartItem.ItemId && c.Variants == null && c.Kit == null)!.Id;
+                    }
+                }
+                catch
+                {
+                    if (cartItem.Variants != null && cartItem.Variants.Count() == 0)
+                    {
                         cartItem.Variants = null;
                     }
                     _context.CartItems.Update(cartItem);
-                    _context.Carts.Update(cart);  
+                    _context.Carts.Update(cart);
                     _context.SaveChanges();
                     return true;
-                    }
-                    return false;
+                }
+                return false;
             }
 
         }
@@ -651,7 +674,7 @@ namespace WebApi.Services.CartService
                         if (variant > 0)
                         {
                             var FoundVariant = _context.Variants.ToList().Find(v => v.VariantId == variant && v.ItemId == item.Id)!;
-                            if(FoundVariant is null)
+                            if (FoundVariant is null)
                             {
                                 response.Success = false;
                                 response.Message = "This variant does not exist";
@@ -685,16 +708,16 @@ namespace WebApi.Services.CartService
                 VariantExists = false;
             }
             int ItemPrice = 0;
-                if (!VariantExists)
-                {
-                    ItemPrice = (int)(item.Price * itemAmount)!;
-                    TotalPrice = (int)(item.Price * itemAmount)!;
-                }
-                else
-                {
+            if (!VariantExists)
+            {
+                ItemPrice = (int)(item.Price * itemAmount)!;
+                TotalPrice = (int)(item.Price * itemAmount)!;
+            }
+            else
+            {
                 ItemPrice = TotalVariantsPrice * itemAmount;
                 TotalPrice = TotalVariantsPrice * itemAmount;
-                }
+            }
 
             response.Data = TotalPrice;
             return response;
@@ -737,7 +760,7 @@ namespace WebApi.Services.CartService
                 response.Message = "The user does not have a product with this id";
                 return response;
             }
-            var Id = CartItem.ItemId;   
+            var Id = CartItem.ItemId;
             // ���� �������� � ������� �������
             if (Variants is not null)
             {
@@ -917,31 +940,38 @@ namespace WebApi.Services.CartService
                     CartItem!.Kit = null;
                     CartItem!.Variants = NewVariantsIds;
                 }
-                
-                try{
-                    if(CartItem.Variants != null && CartItem.Variants!.Count() > 0){
-                    var search = _context.CartItems.ToList().Find(c =>c.Id != CartItem.Id && c.ItemId == CartItem.ItemId && c.Kit == null && c.Variants != null && CartItem!.Variants!.SequenceEqual(c.Variants))!.Id;
-                    } else if(CartItem.Kit != null) {
-                    var search = _context.CartItems.ToList().Find(c =>c.Id != CartItem.Id && c.ItemId == CartItem.ItemId && c.Kit == CartItem.Kit)!.Id;
-                    } else{
-                    var search = _context.CartItems.ToList().Find(c =>c.Id != CartItem.Id && c.ItemId == CartItem.ItemId && c.Variants == null && c.Kit == null)!.Id;
-                    }   
+
+                try
+                {
+                    if (CartItem.Variants != null && CartItem.Variants!.Count() > 0)
+                    {
+                        var search = _context.CartItems.ToList().Find(c => c.Id != CartItem.Id && c.ItemId == CartItem.ItemId && c.Kit == null && c.Variants != null && CartItem!.Variants!.SequenceEqual(c.Variants))!.Id;
                     }
-                catch{
-                _context.CartItems.Update(CartItem);
-                _context.SaveChanges();
-
-                var all = await All(request);
-
-                response.Data = all.Data;
-
-                return response;
+                    else if (CartItem.Kit != null)
+                    {
+                        var search = _context.CartItems.ToList().Find(c => c.Id != CartItem.Id && c.ItemId == CartItem.ItemId && c.Kit == CartItem.Kit)!.Id;
+                    }
+                    else
+                    {
+                        var search = _context.CartItems.ToList().Find(c => c.Id != CartItem.Id && c.ItemId == CartItem.ItemId && c.Variants == null && c.Kit == null)!.Id;
+                    }
                 }
-                    response.StatusCode = 400;
-                    response.Message = "This CartItem already exists";
-                    response.Success = false;
+                catch
+                {
+                    _context.CartItems.Update(CartItem);
+                    _context.SaveChanges();
+
+                    var all = await All(request);
+
+                    response.Data = all.Data;
+
                     return response;
-                
+                }
+                response.StatusCode = 400;
+                response.Message = "This CartItem already exists";
+                response.Success = false;
+                return response;
+
             }
             else if (Amount is not null)
             {
