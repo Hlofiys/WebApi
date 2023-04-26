@@ -16,10 +16,10 @@ namespace WebApi.Controllers
             _mapper = mapper;
         }
         [HttpGet("GetAll")]
-        public ActionResult<ServiceResponse<Item[]>> GetAll()
+        public ActionResult<ServiceResponse<List<Item>>> GetAll()
         {
             var response = _itemService.GetAll();
-            var MapperResponse = _mapper.Map<ServiceResponseDto<Item[]>>(response);
+            var MapperResponse = _mapper.Map<ServiceResponseDto<List<Item>>>(response);
             return Ok(MapperResponse);
         }
         [HttpGet("GetById")]

@@ -15,17 +15,58 @@ using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Filters;
 using Microsoft.OpenApi.Models;
 using WebApi;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using WebApi.Services.EmailService;
+using EFCoreSecondLevelCacheInterceptor;
 using WebApi.Services.OrderService;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
+using EasyCaching.InMemory;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 // Add services to the container
-builder.Services.AddDbContext<DataContext>(options =>
-options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+const string providerName1 = "InMemory1";
+builder.Services.AddEFSecondLevelCache(options =>
+        options.UseEasyCachingCoreProvider(providerName1, isHybridCache: false).DisableLogging(false).UseCacheKeyPrefix("EF_")
+        .CacheQueriesContainingTableNames(
+                        CacheExpirationMode.Absolute, TimeSpan.FromMinutes(30), TableNameComparison.ContainsOnly,
+                        "Kits", "Variants", "Items", "Users", "Orders"
+                    ));
+builder.Services.AddEasyCaching(options =>
+            {
+                // use memory cache with your own configuration
+                options.UseInMemory(config =>
+                {
+                    config.DBConfig = new InMemoryCachingOptions
+                    {
+                        // scan time, default value is 60s
+                        ExpirationScanFrequency = 60,
+                        // total count of cache items, default value is 10000
+                        SizeLimit = 100,
+
+                        // enable deep clone when reading object from cache or not, default value is true.
+                        EnableReadDeepClone = false,
+                        // enable deep clone when writing object to cache or not, default value is false.
+                        EnableWriteDeepClone = false,
+                    };
+                    // the max random second will be added to cache's expiration, default value is 120
+                    config.MaxRdSecond = 120;
+                    // whether enable logging, default is false
+                    config.EnableLogging = false;
+                    // mutex key's alive time(ms), default is 5000
+                    config.LockMs = 5000;
+                    // when mutex key alive, it will sleep some time, default is 300
+                    config.SleepMs = 300;
+                }, providerName1);
+            });
+
+builder.Services.AddDbContext<DataContext>((serviceProvider, optionsBuilder) =>
+optionsBuilder.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), NpgsqlDbContextOptionsBuilder =>
+{
+    NpgsqlDbContextOptionsBuilder
+    .CommandTimeout((int)TimeSpan.FromMinutes(3).TotalSeconds)
+    .EnableRetryOnFailure()
+    .MigrationsAssembly(typeof(NpgsqlServiceCollectionExtensions).Assembly.FullName);
+})
+.AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>()));
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

@@ -17,10 +17,10 @@ namespace WebApi.Services
             _tokenService = new TokenService(_context, _configuration);
 
         }
-        public ServiceResponse<Item[]> GetAll()
+        public ServiceResponse<List<Item>> GetAll()
         {
-            var response = new ServiceResponse<Item[]>();
-            Item[] items = _context.Items.ToArray();
+            var response = new ServiceResponse<List<Item>>();
+            List<Item> items = _context.Items.ToList();
             response.Data = items;
             return response;
         }
