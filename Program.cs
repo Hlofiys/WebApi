@@ -25,7 +25,7 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 // Add services to the container
 const string providerName1 = "InMemory1";
 builder.Services.AddEFSecondLevelCache(options =>
-        options.UseEasyCachingCoreProvider(providerName1, isHybridCache: false).DisableLogging(false).UseCacheKeyPrefix("EF_")
+        options.UseEasyCachingCoreProvider(providerName1, isHybridCache: false).DisableLogging(true).UseCacheKeyPrefix("EF_")
         .CacheQueriesContainingTableNames(
                         CacheExpirationMode.Absolute, TimeSpan.FromMinutes(30), TableNameComparison.ContainsOnly,
                         "Kits", "Variants", "Items", "Users", "Orders"
