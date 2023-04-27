@@ -15,5 +15,6 @@ namespace WebApi.Dtos.Order
         public Dictionary<string, string>? FullDate { get; set; } = null;
         public List<CartItemDto>? CartItems { get; set; } = null;
         public int TotalPrice { get; set; } = 0;
+        public string ShippingStatus {get; set;} = string.Empty;
     }
 }

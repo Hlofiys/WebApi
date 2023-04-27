@@ -15,10 +15,12 @@ namespace WebApi.Data
     {
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
+        private readonly TokenService _tokenService;
         public AuthRepository(DataContext context, IConfiguration configuration)
         {
             _configuration = configuration;
             _context = context;
+            _tokenService = new TokenService(_context, _configuration);
 
         }
 
@@ -377,9 +379,22 @@ namespace WebApi.Data
             return response;
         }
 
-        public async Task<ServiceResponse<string>> Logout(User user, HttpResponse HttpResponse)
+        public async Task<ServiceResponse<string>> Logout(string token, HttpResponse HttpResponse)
         {
             var response = new ServiceResponse<string>();
+            var UserSearchResult = _tokenService.UserSearch(token);
+            if (UserSearchResult!.StatusCode == 401)
+            {
+                response.StatusCode = 401;
+                response.Success = false;
+                return response;
+            }
+            if (UserSearchResult!.Success == false)
+            {
+                response.Success = false;
+                return response;
+            }
+            var user = UserSearchResult.Data!;
             user.RefreshToken = string.Empty;
             HttpResponse.Cookies.Delete("refreshToken");
             _context.Users.Update(user);

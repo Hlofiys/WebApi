@@ -1,10 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System.IdentityModel.Tokens.Jwt;
-using WebApi.Dtos.Cart;
-using WebApi.Models;
-
-namespace WebApi.Services.OrderService
+﻿namespace WebApi.Services.OrderService
 {
     public class OrderService : IOrderService
     {
@@ -138,7 +132,8 @@ namespace WebApi.Services.OrderService
                     Id = order.Id,
                     ZipCode = order.ZipCode,
                     City = order.City,
-                    FullDate = order.FullDate
+                    FullDate = order.FullDate,
+                    ShippingStatus = Enum.GetName(typeof(Order.ShippingStatuses), order.ShippingStatus)!
                 };
                 OrderAllDtos.Add(cartAll);
             }

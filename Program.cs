@@ -63,8 +63,7 @@ optionsBuilder.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConne
 {
     NpgsqlDbContextOptionsBuilder
     .CommandTimeout((int)TimeSpan.FromMinutes(3).TotalSeconds)
-    .EnableRetryOnFailure()
-    .MigrationsAssembly(typeof(NpgsqlServiceCollectionExtensions).Assembly.FullName);
+    .EnableRetryOnFailure();
 })
 .AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>()));
 builder.Services.AddControllers();
