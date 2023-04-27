@@ -210,5 +210,32 @@ namespace WebApi.Services.OrderService
             await _context.SaveChangesAsync();
             return response;
         }
+
+        public async Task<ServiceResponse<string>> StatusUpdate(int OrderId, string token, Order.ShippingStatuses shippingStatus)
+        {
+            var response = new ServiceResponse<string>();
+            var UserSearchResult = _tokenService.UserSearch(token);
+            if (UserSearchResult!.StatusCode == 401)
+            {
+                response.StatusCode = 401;
+                response.Success = false;
+                return response;
+            }
+            if (UserSearchResult!.Success == false)
+            {
+                response.Success = false;
+                return response;
+            }
+            var user = UserSearchResult.Data!;
+            Order? order = _context.Orders.DefaultIfEmpty().First(o => o.Id == OrderId && o.UserId == user.Id) ?? null;
+            if(order == null)
+            {
+                response.Success = false;
+                return response;
+            }
+            order.ShippingStatus = shippingStatus;
+            _context.Orders.Update(order);
+            await _context.SaveChangesAsync(); 
+            return response;       }
     }
 }

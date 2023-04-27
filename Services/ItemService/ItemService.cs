@@ -103,6 +103,7 @@ namespace WebApi.Services
                 response.Message = "You are not an admin!";
                 return response;
             }
+            
             var item = _context.Items.DefaultIfEmpty().First(i => i.Id == itemInfo.Id);
             if (item == null)
             {

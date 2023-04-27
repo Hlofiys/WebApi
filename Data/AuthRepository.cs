@@ -376,5 +376,15 @@ namespace WebApi.Data
             response.Data = user.IsAdmin;
             return response;
         }
+
+        public async Task<ServiceResponse<string>> Logout(User user, HttpResponse HttpResponse)
+        {
+            var response = new ServiceResponse<string>();
+            user.RefreshToken = string.Empty;
+            HttpResponse.Cookies.Delete("refreshToken");
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return response;
+        }
     }
 }

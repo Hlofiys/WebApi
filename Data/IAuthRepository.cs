@@ -9,6 +9,7 @@ namespace WebApi.Data
     {
         Task<ServiceResponse<string>> Register(User user, string password, HttpResponse response);
         Task<ServiceResponse<string>> Login(string username, string password, HttpResponse response, HttpRequest httpRequest);
+        Task<ServiceResponse<string>> Logout(User user, HttpResponse HttpResponse);
         Task<ServiceResponse<bool>> Delete(string username, string password);
 
         Task<bool> UserExists(string username);

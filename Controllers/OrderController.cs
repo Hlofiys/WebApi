@@ -54,6 +54,20 @@ namespace WebApi.Controllers
             }
             return Ok(MapperResponse);
         }
+        [HttpPost("StatusUpdate")]
+        public async Task<ActionResult<ServiceResponse<string>>> StatusUpdate(OrderUpdateStatusDto updateOrder)
+        {
+            var token = Request.Headers["x-access-token"].ToString();
+            var serviceResponse = await _orderService.StatusUpdate(updateOrder.Id, token, updateOrder.shippingStatuses);
+            if(serviceResponse.StatusCode == 401)
+            {
+                return Unauthorized(serviceResponse);
+            } else if(!serviceResponse.Success)
+            {
+                return BadRequest(serviceResponse);
+            }
+            return Ok(serviceResponse);
+        }
 
     }
 }

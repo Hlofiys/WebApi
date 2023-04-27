@@ -12,9 +12,16 @@
         public string? City { get; set; } = null;
         public string? Contact { get; set; } = null;
         public Dictionary<string, string>? FullDate { get; set; } = null;
+        public ShippingStatuses ShippingStatus {get; set;} = ShippingStatuses.BeingProcessed; 
         public int TotalPrice { get; set; } = 0;
 
-        
+        public enum ShippingStatuses
+        {
+            BeingProcessed,
+            Shipping,
+            Delivered,
+
+        }
 
     }
 }

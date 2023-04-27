@@ -14,11 +14,13 @@ namespace WebApi.Controllers
     {
         private readonly IAuthRepository _authRepo;
         private readonly IMapper _mapper;
+        private readonly TokenService _tokenService;
 
-        public AuthController(IAuthRepository authRepo, IMapper mapper)
+        public AuthController(IAuthRepository authRepo, IMapper mapper, TokenService tokenService)
         {
             _authRepo = authRepo;
             _mapper = mapper;
+            _tokenService = tokenService;
         }
 
         [EnableCors("corssus")]
@@ -45,6 +47,29 @@ namespace WebApi.Controllers
             {
                 return UnprocessableEntity(MapperResponse);
             }
+            if (!response.Success)
+            {
+                return BadRequest(MapperResponse);
+            }
+            return Ok(MapperResponse);
+        }
+        [EnableCors("corssus")]
+        [HttpPost("Logout")]
+        public async Task<ActionResult<ServiceResponse<string>>> Loginout()
+        {
+            var token = Request.Headers["x-access-token"].ToString();
+            var UserSearchResult = _tokenService.UserSearch(token);
+            if (UserSearchResult!.StatusCode == 401)
+            {
+                return Unauthorized();
+            }
+            if (UserSearchResult!.Success == false)
+            {
+                return BadRequest();
+            }
+            var user = UserSearchResult.Data!;
+            var response = await _authRepo.Logout(user, Response);
+            var MapperResponse = _mapper.Map<ServiceResponseDto<string>>(response);
             if (!response.Success)
             {
                 return BadRequest(MapperResponse);
@@ -130,6 +155,7 @@ namespace WebApi.Controllers
             if (!response.Success) return BadRequest(MapperResponse);
             return Ok(MapperResponse);
         }
+
 
 
     }
