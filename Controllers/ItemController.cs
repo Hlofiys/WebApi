@@ -46,12 +46,20 @@ namespace WebApi.Controllers
         [HttpPost("Update")]
         public async Task<ActionResult<ServiceResponse<Item>>> Update(ItemUpdateDto itemInfo)
         {
+            var preFlightResponse = new ServiceResponse<string>();
             if (itemInfo.Id == null)
             {
-                return BadRequest();
+                preFlightResponse.Success = false;
+                preFlightResponse.Message = "Id is null";
+                return BadRequest(preFlightResponse);
             }
             string token = Request.Headers["x-access-token"].ToString();
-            if (token is null) return BadRequest();
+            if (token is null)
+            {
+                preFlightResponse.Success = false;
+                preFlightResponse.Message = "Token is null";
+                return BadRequest(preFlightResponse);
+            }
             var response = await _itemService.Update(itemInfo, token);
             if (response.StatusCode == 401) return Unauthorized(response);
             if (!response.Success) return BadRequest();
