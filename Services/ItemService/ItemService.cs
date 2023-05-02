@@ -103,7 +103,7 @@ namespace WebApi.Services
                 response.Message = "You are not an admin!";
                 return response;
             }
-            
+
             var item = _context.Items.DefaultIfEmpty().First(i => i.Id == itemInfo.Id);
             if (item == null)
             {
@@ -119,23 +119,29 @@ namespace WebApi.Services
                     if (property != null)
                     {
                         var propValue = property.GetValue(item);
-                        if(propValue.GetType() == typeof(Dictionary<string, string?>)){
+                        if (propValue.GetType() == typeof(Dictionary<string, string?>))
+                        {
                             var propertyDictionary = new Dictionary<string, string?>((Dictionary<string, string?>)propValue);
                             foreach (var key in itemInfo.Sizes.Keys)
                             {
-                                if(propertyDictionary.ContainsKey(key)){
+                                if (propertyDictionary.ContainsKey(key))
+                                {
                                     propertyDictionary[key] = itemInfo.Sizes[key];
-                                } else{
+                                }
+                                else
+                                {
                                     response.Success = false;
                                     response.Message = "Size with this key has not found";
                                     return response;
                                 }
                             }
                             property.SetValue(item, propertyDictionary, null);
-                        } else{
+                        }
+                        else
+                        {
                             property.SetValue(item, value.GetValue(itemInfo), null);
                         }
-                        
+
                     }
                 }
             }

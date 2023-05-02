@@ -36,7 +36,7 @@ namespace WebApi.Controllers
             if (token is null) return BadRequest();
             var response = await _kitService.Update(kitInfo, token);
             if (response.StatusCode == 401) return Unauthorized(response);
-            if (!response.Success) return BadRequest();
+            if (!response.Success) return BadRequest(response);
             return Ok(response);
         }
     }

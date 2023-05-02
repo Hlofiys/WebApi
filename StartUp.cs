@@ -26,7 +26,7 @@ namespace WebApi
                     Icon = images,
                     Sizes = new Dictionary<string, string?> {
                         { "Material","гипс" },
-                        { "Weigth", null },
+                        { "Weight", null },
                         { "Height",null },
                         { "Depth",null },
                         { "Width", "9,5 см" },
@@ -83,7 +83,7 @@ namespace WebApi
                     Icon = images1,
                     Sizes = new Dictionary<string, string?> {
                         { "Material","гипс" },
-                        { "Weigth", "2,1 кг" },
+                        { "Weight", "2,1 кг" },
                         { "Height","21 см" },
                         { "Depth","7 см" },
                         { "Diameter","8 см" },
@@ -178,7 +178,7 @@ namespace WebApi
                     Price = 45,
                     Sizes = new Dictionary<string, string?> {
                         { "Material","гипс" },
-                        { "Weigth", "1,1 кг" },
+                        { "Weight", "1,1 кг" },
                         { "Height","14 см" },
                         { "Depth","12 см" },
                         { "Width", "20 см" },
