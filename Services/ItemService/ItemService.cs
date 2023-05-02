@@ -121,9 +121,9 @@ namespace WebApi.Services
                         var propValue = property.GetValue(item);
                         if(propValue.GetType() == typeof(Dictionary<string, string?>)){
                             var propertyDictionary = new Dictionary<string, string?>((Dictionary<string, string?>)propValue);
-                            foreach (var key in propertyDictionary.Keys)
+                            foreach (var key in itemInfo.Sizes.Keys)
                             {
-                                if(itemInfo.Sizes.ContainsKey(key)){
+                                if(propertyDictionary.ContainsKey(key)){
                                     propertyDictionary[key] = itemInfo.Sizes[key];
                                 } else{
                                     response.Success = false;

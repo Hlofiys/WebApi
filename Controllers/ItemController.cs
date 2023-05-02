@@ -44,7 +44,7 @@ namespace WebApi.Controllers
             return Ok(response);
         }
         [HttpPost("Update")]
-        public async Task<ActionResult<ServiceResponse<Item>>> Update(ItemUpdateDto itemInfo)
+        public async Task<ActionResult<ServiceResponse<string>>> Update(ItemUpdateDto itemInfo)
         {
             var preFlightResponse = new ServiceResponse<string>();
             if (itemInfo.Id == null)
@@ -62,7 +62,7 @@ namespace WebApi.Controllers
             }
             var response = await _itemService.Update(itemInfo, token);
             if (response.StatusCode == 401) return Unauthorized(response);
-            if (!response.Success) return BadRequest();
+            if (!response.Success) return BadRequest(response);
             return Ok(response);
         }
     }
