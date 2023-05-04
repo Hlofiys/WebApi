@@ -40,5 +40,15 @@ namespace WebApi.Controllers
             if (!response.Success) return BadRequest(response);
             return Ok(response);
         }
+        [HttpPost("Delete")]
+        public async Task<ActionResult<ServiceResponse<string>>> Delete(VariantDeleteDto variantInfo)
+        {
+            string token = Request.Headers["x-access-token"].ToString();
+            if (token is null) return BadRequest();
+            var response = await _variantService.Delete(variantInfo, token);
+            if (response.StatusCode == 401) return Unauthorized(response);
+            if (!response.Success) return BadRequest(response);
+            return Ok(response);
+        }
     }
 }

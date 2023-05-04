@@ -45,9 +45,49 @@ namespace WebApi.Services
                 response.Message = "Item does not exists";
                 return response;
             }
+            if (_context.Variants.Any(v => v.ItemId == addVariant.ItemId && v.Name == addVariant.Name))
+            {
+                response.Success = false;
+                response.Message = "Variant with this name already exists";
+                return response;
+            }
             int maxId = _context.Variants.Where(v => v.ItemId == addVariant.ItemId).Max(v => (int?)v.VariantId) ?? 0;
             addVariant.VariantId = ++maxId;
             _context.Variants.Add(addVariant);
+            await _context.SaveChangesAsync();
+            return response;
+        }
+
+        public async Task<ServiceResponse<string>> Delete(VariantDeleteDto variantInfo, string token)
+        {
+            var response = new ServiceResponse<string>();
+            var UserSearchResult = _tokenService.UserSearch(token);
+            if (UserSearchResult!.StatusCode == 401)
+            {
+                response.StatusCode = 401;
+                response.Success = false;
+                return response;
+            }
+            if (UserSearchResult!.Success == false)
+            {
+                response.Success = false;
+                return response;
+            }
+            var user = UserSearchResult.Data!;
+            if (!user.IsAdmin)
+            {
+                response.Success = false;
+                response.Message = "You are not an admin!";
+                return response;
+            }
+            var variant = _context.Variants.DefaultIfEmpty().First(v => v.ItemId == variantInfo.ItemId && v.VariantId == variantInfo.VariantId) ?? null;
+            if (variant == null)
+            {
+                response.Success = false;
+                response.Message = "Variant or item with this id does not exists";
+                return response;
+            }
+            _context.Variants.Remove(variant);
             await _context.SaveChangesAsync();
             return response;
         }
