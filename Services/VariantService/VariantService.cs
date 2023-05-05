@@ -121,6 +121,12 @@ namespace WebApi.Services
                 response.Message = "Variant or item with this id does not exists";
                 return response;
             }
+            if (_context.Variants.Any(v => v.ItemId == variantInfo.ItemId && v.Name == variantInfo.Name))
+            {
+                response.Success = false;
+                response.Message = "Variant with this name already exists";
+                return response;
+            }
             foreach (var value in variantInfo.GetType().GetProperties())
             {
                 if (value.GetValue(variantInfo) is not null && value.Name != "ItemId" && value.Name != "VariantId")
