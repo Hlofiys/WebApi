@@ -80,8 +80,8 @@ namespace WebApi.Services
                 response.Message = "You are not an admin!";
                 return response;
             }
-            var variant = _context.Variants.DefaultIfEmpty().First(v => v.ItemId == variantInfo.ItemId && v.VariantId == variantInfo.VariantId) ?? null;
-            if (variant == null)
+            var variant = _context.Variants.FirstOrDefault(v => v.ItemId == variantInfo.ItemId && v.VariantId == variantInfo.VariantId);
+            if (variant == null || variant?.Id == null)
             {
                 response.Success = false;
                 response.Message = "Variant or item with this id does not exists";
