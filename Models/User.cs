@@ -17,6 +17,6 @@ namespace WebApi.Models
         public string ActivationId { get; set;} = string.Empty;
         public bool IsActivated { get; set;} = false;
         public bool IsAdmin {get; set;} = false;
-
+        public Dictionary<string, string?>? UserInfo {get; set;} = null;
     }
 }
