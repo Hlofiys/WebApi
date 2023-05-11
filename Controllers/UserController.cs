@@ -29,7 +29,7 @@ namespace WebApi.Controllers
             var MapperResponse = _mapper.Map<ServiceResponseDto<string>>(response);
             return Ok(MapperResponse);
         }
-        [HttpPost("GetInfo")]
+        [HttpGet("GetInfo")]
         public async Task<ActionResult<ServiceResponse<UserGetInfoDto>>> GetInfo()
         {
             var token = Request.Headers["x-access-token"].ToString();
