@@ -9,5 +9,8 @@ namespace WebApi.Dtos.User
         public string? ZipCode {get; set;} = null;
         public string? Birthday {get; set;} = null;
         public string? Phone {get; set;} = null;
+        public string? Vk {get; set;} = null;
+        public string? Instagram {get; set;} = null;
+        public string? Telegram {get; set;} = null;
     }
 }
