@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Services.CartService;
 
@@ -35,11 +36,17 @@ namespace WebApi.Controllers
         {
             var preFlightResponse = new ServiceResponse<string>();
             string[] keys = new string[] { "Depth", "Diameter", "Height", "Length", "Material", "Weigth", "Width" };
-            // itemInfo.Sizes.Keys.OrderBy(d => d).ToDictionary(obj => obj.)
-            if (itemInfo.Sizes is null || !itemInfo.Sizes.Keys.ToArray().SequenceEqual(keys)) 
+            if(itemInfo.Sizes is null)
             {
                 preFlightResponse.Success = false;
-                preFlightResponse.Message = "Sizes are not mach or null";
+                preFlightResponse.Message = "Sizes are null";
+                return BadRequest(preFlightResponse);
+            }
+            itemInfo.Sizes = itemInfo.Sizes.OrderBy(obj => obj.Key).ToDictionary(obj => obj.Key, obj => obj.Value);
+            if (!itemInfo.Sizes.Keys.ToArray().SequenceEqual(keys)) 
+            {
+                preFlightResponse.Success = false;
+                preFlightResponse.Message = "Sizes are not mach";
                 return BadRequest(preFlightResponse);
             }
             Item item = new Item { Name = itemInfo.Name, Description = itemInfo.Description, Sizes = itemInfo.Sizes, Icon = itemInfo.Icon, Price = itemInfo.Price };
