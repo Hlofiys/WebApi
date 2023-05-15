@@ -33,11 +33,22 @@ namespace WebApi.Controllers
         [HttpPost("Add")]
         public async Task<ActionResult<ServiceResponse<Item>>> Add(ItemAddDto itemInfo)
         {
+            var preFlightResponse = new ServiceResponse<string>();
             string[] keys = new string[] { "Material", "Weigth", "Height", "Depth", "Diameter", "Width", "Length" };
-            if (itemInfo.Sizes is null || !itemInfo.Sizes.Keys.ToArray().SequenceEqual(keys)) return BadRequest();
+            if (itemInfo.Sizes is null || !itemInfo.Sizes.Keys.ToArray().SequenceEqual(keys)) 
+            {
+                preFlightResponse.Success = false;
+                preFlightResponse.Message = "Sizes are not mach or null";
+                return BadRequest(preFlightResponse);
+            }
             Item item = new Item { Name = itemInfo.Name, Description = itemInfo.Description, Sizes = itemInfo.Sizes, Icon = itemInfo.Icon, Price = itemInfo.Price };
             string token = Request.Headers["x-access-token"].ToString();
-            if (token is null) return BadRequest();
+            if (token is null)
+            {
+                preFlightResponse.Success = false;
+                preFlightResponse.Message = "Token is null";
+                return BadRequest(preFlightResponse);
+            }
             var response = await _itemService.Add(item, token);
             if (response.StatusCode == 401) return Unauthorized(response);
             if (!response.Success) return BadRequest(response);
