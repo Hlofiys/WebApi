@@ -40,7 +40,7 @@ namespace WebApi.Controllers
             if (token is null) return BadRequest();
             var response = await _itemService.Add(item, token);
             if (response.StatusCode == 401) return Unauthorized(response);
-            if (!response.Success) return BadRequest();
+            if (!response.Success) return BadRequest(response);
             return Ok(response);
         }
         [HttpPost("Update")]
