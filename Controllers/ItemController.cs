@@ -34,7 +34,8 @@ namespace WebApi.Controllers
         public async Task<ActionResult<ServiceResponse<Item>>> Add(ItemAddDto itemInfo)
         {
             var preFlightResponse = new ServiceResponse<string>();
-            string[] keys = new string[] { "Material", "Weigth", "Height", "Depth", "Diameter", "Width", "Length" };
+            string[] keys = new string[] { "Depth", "Diameter", "Height", "Length", "Material", "Weigth", "Width" };
+            // itemInfo.Sizes.Keys.OrderBy(d => d).ToDictionary(obj => obj.)
             if (itemInfo.Sizes is null || !itemInfo.Sizes.Keys.ToArray().SequenceEqual(keys)) 
             {
                 preFlightResponse.Success = false;
