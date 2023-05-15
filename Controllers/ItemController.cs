@@ -35,7 +35,7 @@ namespace WebApi.Controllers
         public async Task<ActionResult<ServiceResponse<Item>>> Add(ItemAddDto itemInfo)
         {
             var preFlightResponse = new ServiceResponse<string>();
-            string[] keys = new string[] { "Depth", "Diameter", "Height", "Length", "Material", "Weigth", "Width" };
+            string[] keys = new string[] { "Depth", "Diameter", "Height", "Length", "Material", "Weight", "Width" };
             if(itemInfo.Sizes is null)
             {
                 preFlightResponse.Success = false;
