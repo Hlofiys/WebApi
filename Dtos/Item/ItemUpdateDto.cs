@@ -4,5 +4,6 @@ namespace WebApi.Dtos.Item
     {
         public new string? Name {get; set;} = null;
         public int? Id {get; set;}
+        public new string? Description {get; set;} = null;
     }
 }
