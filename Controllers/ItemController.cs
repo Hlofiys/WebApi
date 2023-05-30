@@ -87,7 +87,7 @@ namespace WebApi.Controllers
         [HttpGet("GetAllCombinations")]
         public async Task<ActionResult<ServiceResponse<List<ItemGetAllCombinations>>>> GetAllCombinations(int id)
         {
-            var response = await _itemService.GetAllCombinatios(id);
+            var response = await _itemService.GetAllCombinations(id);
             if (!response.Success) return BadRequest(response);
             return Ok(response);
         }

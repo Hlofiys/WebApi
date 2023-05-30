@@ -152,7 +152,7 @@ namespace WebApi.Services
             return response;
         }
 
-        public async Task<ServiceResponse<List<ItemGetAllCombinations>>> GetAllCombinatios(int id)
+        public async Task<ServiceResponse<List<ItemGetAllCombinations>>> GetAllCombinations(int id)
         {
             ServiceResponse<List<ItemGetAllCombinations>> ListItemGetAllCombinations = new ServiceResponse<List<ItemGetAllCombinations>>();
             var item = _context.Items.FirstOrDefault(i => i.Id == id);
@@ -189,7 +189,7 @@ namespace WebApi.Services
                 itemGetAllCombinations.Variants = itemGetAllCombinations.Variants.OrderBy(v => v.Id).ToArray();
                 ListItemGetAllCombinations.Data.Add(itemGetAllCombinations);
             }
-            ListItemGetAllCombinations.Data.OrderBy(i => i.Variants.Count());
+            ListItemGetAllCombinations.Data = ListItemGetAllCombinations.Data.OrderBy(i => i.Variants.Count()).ToList();
             return ListItemGetAllCombinations;
         }
     }
