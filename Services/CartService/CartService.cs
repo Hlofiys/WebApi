@@ -650,7 +650,7 @@ namespace WebApi.Services.CartService
                 return response;
             }
             bool VariantExists;
-            int TotalVariantsPrice = 0;
+            int TotalVariantsPrice = (int)item.Price!;
             int TotalPrice = 0;
             Kit? Kit = null;
             List<Variant> FoundVariants = new();

@@ -1,6 +1,7 @@
 using System.Linq;
 using WebApi.Dtos.Cart;
 using WebApi.Dtos.Item;
+using WebApi.Migrations;
 
 namespace WebApi.Services
 {
@@ -154,7 +155,7 @@ namespace WebApi.Services
 
         public async Task<ServiceResponse<List<ItemGetAllCombinations>>> GetAllCombinations(int id)
         {
-            ServiceResponse<List<ItemGetAllCombinations>> ListItemGetAllCombinations = new ServiceResponse<List<ItemGetAllCombinations>>();
+            ServiceResponse<List<ItemGetAllCombinations>> ListItemGetAllCombinations = new();
             var item = _context.Items.FirstOrDefault(i => i.Id == id);
             if (item == null)
             {
@@ -162,34 +163,72 @@ namespace WebApi.Services
                 ListItemGetAllCombinations.Message = "Item with this id has not found";
                 return ListItemGetAllCombinations;
             }
-            int[] arr = _context.Variants.Where(v => v.ItemId == id).Select(v => v.VariantId).ToArray();
-            int n = arr.Length;
-            for (int i = 0; i < (1 << n); i++)
+            if (!item.IsAKit)
             {
-                ItemGetAllCombinations itemGetAllCombinations = new ItemGetAllCombinations();
-                itemGetAllCombinations.Variants = new VariantDto[] {};
-                for (int j = 0; j < n; j++)
+                int[] arr = _context.Variants.Where(v => v.ItemId == id).Select(v => v.VariantId).ToArray();
+                int n = arr.Length;
+                for (int i = 0; i < (1 << n); i++)
                 {
-                    if ((i & (1 << j)) > 0)
-                        itemGetAllCombinations.Variants = itemGetAllCombinations.Variants.Append(_mapper.Map<VariantDto>(_context.Variants.FirstOrDefault(v => v.VariantId == arr[j] && v.ItemId == id))).ToArray();
+                    ItemGetAllCombinations? itemGetAllCombinations = new();
+                    VariantDto[] Variants = new VariantDto[] { };
+                    for (int j = 0; j < n; j++)
+                    {
+                        if ((i & (1 << j)) > 0)
+                            Variants = Variants.Append(_mapper.Map<VariantDto>(_context.Variants.FirstOrDefault(v => v.VariantId == arr[j] && v.ItemId == id))).ToArray();
+                    }
+                    var variantsIds = Variants.Select(v => v.Id).ToList();
+                    variantsIds = variantsIds.OrderBy(i => i).ToList();
+                    var kit = _context.Kits.ToList().Find(k => k.ItemId == id && k.Variants.SequenceEqual(variantsIds)) ?? null;
+                    if (kit != null)
+                    {
+                        itemGetAllCombinations.Icon = kit.Icon;
+                        itemGetAllCombinations.Price = kit.Price;
+                    }
+                    else if (variantsIds.Count > 0)
+                    {
+                        itemGetAllCombinations.Icon = new List<string> { };
+                        itemGetAllCombinations.Price = item.Price;
+                        foreach (var variant in Variants)
+                        {
+                            itemGetAllCombinations.Icon.AddRange(variant.Icon);
+                            itemGetAllCombinations.Price += variant.Price;
+                        }
+                        if (itemGetAllCombinations.Icon.Count() == 0) itemGetAllCombinations.Icon = null;
+                    }
+                    else
+                    {
+                        itemGetAllCombinations.Icon = item.Icon;
+                        itemGetAllCombinations.Price = item.Price;
+                    }
+                    itemGetAllCombinations.Name = item.Name;
+                    ListItemGetAllCombinations.Data ??= new List<ItemGetAllCombinations>();
+                    itemGetAllCombinations.Variants = variantsIds.ToArray();
+                    if (itemGetAllCombinations.Variants != null && itemGetAllCombinations.Variants.Any())
+                        itemGetAllCombinations.Variants ??= itemGetAllCombinations.Variants.OrderBy(v => v).ToArray();
+                    ListItemGetAllCombinations.Data.Add(itemGetAllCombinations);
                 }
-                Console.WriteLine(itemGetAllCombinations.Variants.Count());
-                itemGetAllCombinations.Description = item.Description;
-                itemGetAllCombinations.Icon = item.Icon;
-                itemGetAllCombinations.Name = item.Name;
-                itemGetAllCombinations.Sizes = item.Sizes;
-                var variantsIds = itemGetAllCombinations.Variants.Select(v => v.Id).ToList();
-                variantsIds = variantsIds.OrderBy(i => i).ToList();
-                var kit = _context.Kits.ToList().Find(k => k.ItemId == id && k.Variants.SequenceEqual(variantsIds));
-                if(kit != null) itemGetAllCombinations.Kit = _mapper.Map<KitDto>(kit);
-                if(ListItemGetAllCombinations.Data == null)
+            }
+            else
+            {
+                ItemGetAllCombinations itemGetAllCombinations = new()
                 {
-                    ListItemGetAllCombinations.Data = new List<ItemGetAllCombinations> ();
-                }
-                itemGetAllCombinations.Variants = itemGetAllCombinations.Variants.OrderBy(v => v.Id).ToArray();
+                    Icon = item.Icon,
+                    Price = item.Price,
+                    Name = item.Name,
+                };
+                ListItemGetAllCombinations.Data ??= new List<ItemGetAllCombinations>();
                 ListItemGetAllCombinations.Data.Add(itemGetAllCombinations);
             }
-            ListItemGetAllCombinations.Data = ListItemGetAllCombinations.Data.OrderBy(i => i.Variants.Count()).ToList();
+            var ChildItems = _context.Items.DefaultIfEmpty().Where(i => i.ParentId == item.Id) ?? null;
+            if (ChildItems != null && ChildItems.Any())
+            {
+                foreach (var childItem in ChildItems)
+                {
+                    var result = await GetAllCombinations(childItem.Id);
+                    ListItemGetAllCombinations.Data.AddRange(result.Data);
+                }
+            }
+
             return ListItemGetAllCombinations;
         }
     }

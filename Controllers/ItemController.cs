@@ -49,7 +49,7 @@ namespace WebApi.Controllers
                 preFlightResponse.Message = "Sizes are not mach";
                 return BadRequest(preFlightResponse);
             }
-            Item item = new Item { Name = itemInfo.Name, Description = itemInfo.Description, Sizes = itemInfo.Sizes, Icon = itemInfo.Icon, Price = itemInfo.Price };
+            Item item = new() { Name = itemInfo.Name, Description = itemInfo.Description, Sizes = itemInfo.Sizes, Icon = itemInfo.Icon, Price = itemInfo.Price, IsAKit = itemInfo.IsAKit, ParentId = itemInfo.ParentId };
             string token = Request.Headers["x-access-token"].ToString();
             if (token is null)
             {

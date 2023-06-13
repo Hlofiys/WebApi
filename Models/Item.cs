@@ -8,5 +8,7 @@ namespace WebApi.Models
         public int? Price {get; set;} = null;
         public List<string>? Icon {get; set;} = null;
         public Dictionary<string, string?>? Sizes { get; set;} = null;
+        public bool IsAKit {get; set;} = false;
+        public int? ParentId {get; set;} = null;
     }
 }
