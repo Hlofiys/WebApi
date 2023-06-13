@@ -201,6 +201,7 @@ namespace WebApi.Services
                         itemGetAllCombinations.Price = item.Price;
                     }
                     itemGetAllCombinations.Name = item.Name;
+                    itemGetAllCombinations.Id = item.Id;
                     ListItemGetAllCombinations.Data ??= new List<ItemGetAllCombinations>();
                     itemGetAllCombinations.Variants = variantsIds.ToArray();
                     if (itemGetAllCombinations.Variants != null && itemGetAllCombinations.Variants.Any())
@@ -215,6 +216,7 @@ namespace WebApi.Services
                     Icon = item.Icon,
                     Price = item.Price,
                     Name = item.Name,
+                    Id = item.Id
                 };
                 ListItemGetAllCombinations.Data ??= new List<ItemGetAllCombinations>();
                 ListItemGetAllCombinations.Data.Add(itemGetAllCombinations);
