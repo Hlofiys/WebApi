@@ -208,7 +208,7 @@ namespace WebApi.Services.CartService
                 _context.Update(user);
             }
 
-            CartItem cartItem = new CartItem()
+            CartItem cartItem = new()
             {
                 Amount = itemAmount,
                 CartId = cart.Id,
@@ -266,7 +266,7 @@ namespace WebApi.Services.CartService
                 response.Message = "The user has no products";
                 return response;
             }
-            List<CartItemDto> itemDtos = new List<CartItemDto>();
+            List<CartItemDto> itemDtos = new();
             foreach (var item in CartItems)
             {
                 var FoundItem = _context.Items.ToList().Find(i => i.Id == item.ItemId);
@@ -317,7 +317,7 @@ namespace WebApi.Services.CartService
                 {
                     variantDto = null;
                 }
-                CartItemDto itemDto = new CartItemDto()
+                CartItemDto itemDto = new()
                 {
                     CartItemId = item.Id,
                     Item = FoundItem,
@@ -339,10 +339,10 @@ namespace WebApi.Services.CartService
                 response.Message = "Product search error";
                 return response;
             }
-            CartAllDto cartAll = new CartAllDto()
+            CartAllDto cartAll = new()
             {
                 CartItems = itemDtos,
-                TotalPrice = (int)cart.TotalPrice!,
+                TotalPrice = cart.TotalPrice!,
             };
             response.Data = cartAll;
             return response;
@@ -865,7 +865,7 @@ namespace WebApi.Services.CartService
                 }
 
                 List<Kit> kits = _context.Kits.ToList().FindAll(k => k.ItemId == CartItem?.ItemId);
-                List<Variant> FoundVariants = new List<Variant>();
+                List<Variant> FoundVariants = new();
                 Kit? Kit = null;
                 foreach (var localkit in kits)
                 {

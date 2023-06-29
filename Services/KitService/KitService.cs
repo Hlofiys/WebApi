@@ -129,5 +129,64 @@ namespace WebApi.Services
             response.Data = kit;
             return response;
         }
+        public async Task<ServiceResponse<List<ItemGetAllCombinations>>> GetAll()
+        {
+            ServiceResponse<List<ItemGetAllCombinations>> ListItemGetAllCombinations = new();
+            var items = _context.Items.Where(i => i.IsAKit).ToList();
+            if (items == null || items.Count == 0)
+            {
+                ListItemGetAllCombinations.Success = false;
+                ListItemGetAllCombinations.Message = "No items in this category";
+                return ListItemGetAllCombinations;
+            }
+            foreach (var item in items)
+            {
+                var id = item.Id;
+                int[] arr = _context.Variants.Where(v => v.ItemId == id).Select(v => v.VariantId).ToArray();
+                int n = arr.Length;
+                for (int i = 0; i < (1 << n); i++)
+                {
+                    ItemGetAllCombinations? itemGetAllCombinations = new();
+                    VariantDto[] Variants = Array.Empty<VariantDto>();
+                    for (int j = 0; j < n; j++)
+                    {
+                        if ((i & (1 << j)) > 0)
+                            Variants = Variants.Append(_mapper.Map<VariantDto>(_context.Variants.FirstOrDefault(v => v.VariantId == arr[j] && v.ItemId == id))).ToArray();
+                    }
+                    var variantsIds = Variants.Select(v => v.Id).ToList();
+                    variantsIds = variantsIds.OrderBy(i => i).ToList();
+                    var kit = _context.Kits.ToList().Find(k => k.ItemId == id && k.Variants.SequenceEqual(variantsIds)) ?? null;
+                    if (kit != null)
+                    {
+                        itemGetAllCombinations.Icon = kit.Icon;
+                        itemGetAllCombinations.Price = kit.Price;
+                    }
+                    else if (variantsIds.Count > 0)
+                    {
+                        itemGetAllCombinations.Icon = new List<string> { };
+                        itemGetAllCombinations.Price = item.Price;
+                        foreach (var variant in Variants)
+                        {
+                            itemGetAllCombinations.Icon.AddRange(variant.Icon);
+                            itemGetAllCombinations.Price += variant.Price;
+                        }
+                        if (itemGetAllCombinations.Icon.Count == 0) itemGetAllCombinations.Icon = null;
+                    }
+                    else
+                    {
+                        itemGetAllCombinations.Icon = item.Icon;
+                        itemGetAllCombinations.Price = item.Price;
+                    }
+                    itemGetAllCombinations.Name = item.Name;
+                    itemGetAllCombinations.Id = item.Id;
+                    ListItemGetAllCombinations.Data ??= new List<ItemGetAllCombinations>();
+                    itemGetAllCombinations.Variants = variantsIds.ToArray();
+                    if (itemGetAllCombinations.Variants != null && itemGetAllCombinations.Variants.Any())
+                        itemGetAllCombinations.Variants ??= itemGetAllCombinations.Variants.OrderBy(v => v).ToArray();
+                    ListItemGetAllCombinations.Data.Add(itemGetAllCombinations);
+                }
+            }
+            return ListItemGetAllCombinations;
+        }
     }
 }

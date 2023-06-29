@@ -36,20 +36,30 @@ namespace WebApi.Controllers
         {
             var preFlightResponse = new ServiceResponse<string>();
             string[] keys = new string[] { "Depth", "Diameter", "Height", "Length", "Material", "Weight", "Width" };
-            if(itemInfo.Sizes is null)
+            if (itemInfo.Sizes is null)
             {
                 preFlightResponse.Success = false;
                 preFlightResponse.Message = "Sizes are null";
                 return BadRequest(preFlightResponse);
             }
             itemInfo.Sizes = itemInfo.Sizes.OrderBy(obj => obj.Key).ToDictionary(obj => obj.Key, obj => obj.Value);
-            if (!itemInfo.Sizes.Keys.ToArray().SequenceEqual(keys)) 
+            if (!itemInfo.Sizes.Keys.ToArray().SequenceEqual(keys))
             {
                 preFlightResponse.Success = false;
                 preFlightResponse.Message = "Sizes are not mach";
                 return BadRequest(preFlightResponse);
             }
-            Item item = new() { Name = itemInfo.Name, Description = itemInfo.Description, Sizes = itemInfo.Sizes, Icon = itemInfo.Icon, Price = itemInfo.Price, IsAKit = itemInfo.IsAKit, ParentId = itemInfo.ParentId };
+            Item item = new()
+            {
+                Name = itemInfo.Name,
+                Description = itemInfo.Description,
+                Sizes = itemInfo.Sizes,
+                Icon = itemInfo.Icon,
+                Price = itemInfo.Price,
+                IsAKit = itemInfo.IsAKit,
+                ParentId = itemInfo.ParentId,
+                Type = itemInfo.Type,
+            };
             string token = Request.Headers["x-access-token"].ToString();
             if (token is null)
             {

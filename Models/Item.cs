@@ -10,5 +10,6 @@ namespace WebApi.Models
         public Dictionary<string, string?>? Sizes { get; set;} = null;
         public bool IsAKit {get; set;} = false;
         public int? ParentId {get; set;} = null;
+        public string Type {get; set;} = "Item";
     }
 }

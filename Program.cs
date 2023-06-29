@@ -140,7 +140,7 @@ if (app.Environment.IsDevelopment())
 
 app.MapGet("api/addItems", async (DataContext db) =>
 {
-    StartUp startUp = new StartUp(db);
+    StartUp startUp = new(db);
     await startUp.AddItems();
 });
 

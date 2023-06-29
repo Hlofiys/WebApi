@@ -17,7 +17,7 @@ namespace WebApi.Controllers
         [HttpPost("Add")]
         public async Task<ActionResult<ServiceResponse<Kit>>> Add(KitAddDto kitInfo)
         {
-            Kit kit = new Kit { Name = kitInfo.Name, Icon = kitInfo.Icon, Price = kitInfo.Price, ItemId = kitInfo.ItemId, Variants = kitInfo.Variants };
+            Kit kit = new() { Name = kitInfo.Name, Icon = kitInfo.Icon, Price = kitInfo.Price, ItemId = kitInfo.ItemId, Variants = kitInfo.Variants };
             string token = Request.Headers["x-access-token"].ToString();
             if (token is null) return BadRequest();
             var response = await _kitService.Add(kit, token);
@@ -36,6 +36,13 @@ namespace WebApi.Controllers
             if (token is null) return BadRequest();
             var response = await _kitService.Update(kitInfo, token);
             if (response.StatusCode == 401) return Unauthorized(response);
+            if (!response.Success) return BadRequest(response);
+            return Ok(response);
+        }
+        [HttpGet("GetAll")]
+        public async Task<ActionResult<ServiceResponse<ItemGetAllCombinations>>> GetAll()
+        {
+            var response = await _kitService.GetAll();
             if (!response.Success) return BadRequest(response);
             return Ok(response);
         }

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using WebApi.Services.EmailService;
 
@@ -48,7 +42,7 @@ namespace WebApi.Data
             }
             else
             {
-                await CreateRefreshToken(user, httpResponse, httpRequest);
+                await CreateRefreshToken(user, httpResponse);
                 response.Data = CreateToken(user);
             }
 
@@ -58,7 +52,7 @@ namespace WebApi.Data
         public async Task<ServiceResponse<string>> Register(User user, string password, HttpResponse httpResponse)
         {
             var response = new ServiceResponse<string>();
-            EmailService emailService = new EmailService(_configuration);
+            EmailService emailService = new(_configuration);
             if (await UserExists(user.Username))
             {
                 response.Success = false;
@@ -118,20 +112,16 @@ namespace WebApi.Data
 
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            }
+            using var hmac = new System.Security.Cryptography.HMACSHA512();
+            passwordSalt = hmac.Key;
+            passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
         }
 
         private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt))
-            {
-                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                return computedHash.SequenceEqual(passwordHash);
-            }
+            using var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt);
+            var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            return computedHash.SequenceEqual(passwordHash);
         }
 
         private string CreateToken(User user)
@@ -142,14 +132,11 @@ namespace WebApi.Data
                 new Claim(ClaimTypes.Name, user.Username)
             };
 
-            var appSettingsToken = _configuration.GetSection("AppSettings:Token").Value;
-            if (appSettingsToken is null)
-                throw new Exception("AppSettings Token is null!");
-
-            SymmetricSecurityKey key = new SymmetricSecurityKey(System.Text.Encoding.UTF8
+            var appSettingsToken = _configuration.GetSection("AppSettings:Token").Value ?? throw new Exception("AppSettings Token is null!");
+            SymmetricSecurityKey key = new(System.Text.Encoding.UTF8
                 .GetBytes(appSettingsToken));
 
-            SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            SigningCredentials creds = new(key, SecurityAlgorithms.HmacSha512Signature);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -158,12 +145,12 @@ namespace WebApi.Data
                 SigningCredentials = creds
             };
 
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            JwtSecurityTokenHandler tokenHandler = new();
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
         }
-        private async Task<string> CreateRefreshToken(User user, HttpResponse response, HttpRequest httpRequest)
+        private async Task<string> CreateRefreshToken(User user, HttpResponse response)
         {
             var claims = new List<Claim>
             {
@@ -171,14 +158,11 @@ namespace WebApi.Data
                 new Claim(ClaimTypes.Name, user.Username)
             };
 
-            var appSettingsToken = _configuration.GetSection("AppSettings:Token").Value;
-            if (appSettingsToken is null)
-                throw new Exception("AppSettings Token is null!");
-
-            SymmetricSecurityKey key = new SymmetricSecurityKey(System.Text.Encoding.UTF8
+            var appSettingsToken = _configuration.GetSection("AppSettings:Token").Value ?? throw new Exception("AppSettings Token is null!");
+            SymmetricSecurityKey key = new(System.Text.Encoding.UTF8
                 .GetBytes(appSettingsToken));
 
-            SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            SigningCredentials creds = new(key, SecurityAlgorithms.HmacSha512Signature);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -187,17 +171,17 @@ namespace WebApi.Data
                 SigningCredentials = creds
             };
 
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            JwtSecurityTokenHandler tokenHandler = new();
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
 
-            await SetRefreshToken(tokenHandler.WriteToken(token), response, user, httpRequest);
+            await SetRefreshToken(tokenHandler.WriteToken(token), response, user);
 
             return tokenHandler.WriteToken(token);
         }
 
-        private async Task SetRefreshToken(string newRefreshToken, HttpResponse response, User user, HttpRequest httpRequest)
+        private async Task SetRefreshToken(string newRefreshToken, HttpResponse response, User user)
         {
-            var cookieOptions = new CookieOptions
+            CookieOptions cookieOptions = new()
             {
                 HttpOnly = true,
                 SameSite = SameSiteMode.None,
@@ -278,7 +262,7 @@ namespace WebApi.Data
             }
             if (user.RefreshToken == token)
             {
-                await CreateRefreshToken(user, Httpresponse, request);
+                await CreateRefreshToken(user, Httpresponse);
                 var AccessToken = CreateToken(user);
                 response.Data = AccessToken;
                 return response;
@@ -314,7 +298,7 @@ namespace WebApi.Data
             user.IsActivated = true;
             _context.Update(user);
             await _context.SaveChangesAsync();
-            await CreateRefreshToken(user, httpResponse, httpRequest);
+            await CreateRefreshToken(user, httpResponse);
             response.Data = CreateToken(user);
             return response;
         }

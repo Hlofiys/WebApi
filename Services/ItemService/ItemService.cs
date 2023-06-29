@@ -23,6 +23,9 @@ namespace WebApi.Services
         {
             var response = new ServiceResponse<List<Item>>();
             List<Item> items = _context.Items.ToList();
+            var kits = items.Where(i => i.Type == "Kits").ToList();
+            items.RemoveAll(i => i.Type == "Kits");
+            items.AddRange(kits);
             response.Data = items;
             return response;
         }
@@ -30,7 +33,7 @@ namespace WebApi.Services
         public async Task<ServiceResponse<ItemById>> GetById(int id)
         {
             var response = new ServiceResponse<ItemById>();
-            ItemById itemById = new ItemById();
+            ItemById itemById = new();
             Item item = _context.Items.ToList().Find(i => i.Id == id)!;
             if (item is not null)
                 itemById.Item = item;
@@ -39,7 +42,7 @@ namespace WebApi.Services
 
             if (variants.Any())
             {
-                List<VariantDto> variantsDto = new List<VariantDto>();
+                List<VariantDto> variantsDto = new();
                 foreach (var var in variants)
                 {
                     variantsDto.Add(_mapper.Map<VariantDto>(var));
