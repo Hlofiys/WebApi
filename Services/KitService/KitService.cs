@@ -174,8 +174,7 @@ namespace WebApi.Services
                     }
                     else
                     {
-                        itemGetAllCombinations.Icon = item.Icon;
-                        itemGetAllCombinations.Price = item.Price;
+                        continue;
                     }
                     itemGetAllCombinations.Name = item.Name;
                     itemGetAllCombinations.Id = item.Id;
