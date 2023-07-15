@@ -114,11 +114,17 @@ namespace WebApi.Services
                 response.Message = "You are not an admin!";
                 return response;
             }
-            var variant = _context.Variants.DefaultIfEmpty().First(v => v.ItemId == variantInfo.ItemId && v.VariantId == variantInfo.VariantId);
+            var variant = _context.Variants.DefaultIfEmpty().FirstOrDefault(v => v.ItemId == variantInfo.ItemId && v.VariantId == variantInfo.VariantId);
             if (variant == null)
             {
                 response.Success = false;
                 response.Message = "Variant or item with this id does not exists";
+                return response;
+            }
+            if (variant.Name == variantInfo.Name)
+            {
+                response.Success = false;
+                response.Message = "Variant already has this name";
                 return response;
             }
             if (_context.Variants.Any(v => v.ItemId == variantInfo.ItemId && v.Name == variantInfo.Name))
