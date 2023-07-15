@@ -80,6 +80,12 @@ namespace WebApi.Services.CartService
                                 response.Message = "This item is already in the cart";
                                 return response;
                             }
+                            if (CartItem.Kit == null && CartItem.Variants == null && Variants == null)
+                            {
+                                response.Success = false;
+                                response.Message = "This item is already in the cart";
+                                return response;
+                            }
                         }
                     }
 
